@@ -2,6 +2,8 @@ name: Validate Splunk app
 
 on:
   push:
+    branches:
+      - main
   pull_request:
 
 permissions:
