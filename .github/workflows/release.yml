@@ -51,12 +51,6 @@ jobs:
           sha256sum "${{ steps.target.outputs.package }}" > "${{ steps.target.outputs.package }}.sha256"
           ls -lah dist
 
-      - name: Cache pip
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-appinspect-4.3.0
-
       - name: Install AppInspect
         run: |
           python3 -m pip install --upgrade pip
@@ -94,24 +88,16 @@ jobs:
           )
           PY
 
-      - name: Upload release artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.target.outputs.artifact_name }}
-          if-no-files-found: error
-          path: |
-            ${{ steps.target.outputs.package }}
-            ${{ steps.target.outputs.package }}.sha256
-            ${{ steps.target.outputs.appinspect_file }}
-            dist/compliance_control_plane-${{ steps.target.outputs.app_version }}.manifest.json
-
       - name: Publish GitHub Release
         if: steps.target.outputs.release_tag == 'true'
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            ${{ steps.target.outputs.package }}
-            ${{ steps.target.outputs.package }}.sha256
-            ${{ steps.target.outputs.appinspect_file }}
-            dist/compliance_control_plane-${{ steps.target.outputs.app_version }}.manifest.json
-          generate_release_notes: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+            gh release create "${GITHUB_REF_NAME}" \
+              "${{ steps.target.outputs.package }}" \
+              "${{ steps.target.outputs.package }}.sha256" \
+              "${{ steps.target.outputs.appinspect_file }}" \
+              "dist/compliance_control_plane-${{ steps.target.outputs.app_version }}.manifest.json" \
+              --repo "${GITHUB_REPOSITORY}" \
+              --generate-notes \
+              --title "Compliance Control Plane ${GITHUB_REF_NAME#compliance-control-plane-v}"
