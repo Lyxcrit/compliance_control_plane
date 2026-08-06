@@ -21,6 +21,17 @@ Run the pinned AppInspect CLI against both packaging and Cloud tags:
 
 The Cloud-tag result is a release blocker. Re-run it whenever the Splunk platform or AppInspect checks change.
 
+## GitHub release workflow
+
+The tagged release workflow is `.github/workflows/release.yml`, modeled on the APT Falconer release process. After `tools/validate.sh` passes and the deployed acceptance baseline is approved, create and push a version-matching tag:
+
+```bash
+git tag compliance-control-plane-v0.3.25
+git push origin compliance-control-plane-v0.3.25
+```
+
+The tag must match the version in `default/app.conf`. GitHub Actions then builds the package, writes its SHA-256 file and release manifest, runs pinned AppInspect 4.3.0 precert validation, uploads the package artifacts, and publishes a GitHub Release only when AppInspect reports zero errors, failures, and future failures. A manual workflow dispatch runs the build and validation path without publishing a release.
+
 Generate the release manifest and run the package lifecycle contract:
 
 ```bash
