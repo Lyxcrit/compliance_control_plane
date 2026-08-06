@@ -1,0 +1,20 @@
+{
+  "key": "fisma-rmf",
+  "name": "FISMA / NIST RMF",
+  "version": "2014 RMF with current NIST SP 800-53 context",
+  "authority": "U.S. Federal Government / NIST",
+  "description": "Federal information-system risk management obligations covering categorization, control selection, implementation, assessment, authorization, and continuous monitoring.",
+  "source_url": "https://csrc.nist.gov/projects/risk-management/about-rmf",
+  "content_status": "foundational",
+  "default_selected": 0,
+  "requirements": [
+    {"key":"fisma.categorize","title":"Categorize the information system","description":"Document the system, information types, impact levels, and authorization boundary.","type":"obligation","category":"RMF","source_reference":"FIPS 199 and NIST SP 800-60 / RMF Prepare-Categorize","evidence_types":["system_security_plan","security_categorization","authorization_boundary"],"verification_mode":"document"},
+    {"key":"fisma.select","title":"Select and tailor controls","description":"Select, tailor, and document the applicable controls and enhancements for the system baseline.","type":"obligation","category":"RMF","source_reference":"NIST SP 800-53B and RMF Select","evidence_types":["control_baseline","tailoring_record","organization_defined_parameters"],"verification_mode":"document"},
+    {"key":"fisma.implement","title":"Implement controls","description":"Implement and document the controls within the approved system boundary.","type":"obligation","category":"RMF","source_reference":"NIST SP 800-53 and RMF Implement","evidence_types":["control_implementation","configuration_state","operating_procedure"],"verification_mode":"hybrid"},
+    {"key":"fisma.assess","title":"Assess control effectiveness","description":"Assess controls using defined procedures and retain the assessment results and evidence.","type":"obligation","category":"RMF","source_reference":"NIST SP 800-53A and RMF Assess","evidence_types":["assessment_plan","assessment_results","test_record"],"verification_mode":"hybrid"},
+    {"key":"fisma.authorize","title":"Authorize the system","description":"Maintain a current authorization decision based on documented risk and assessment results.","type":"obligation","category":"RMF","source_reference":"NIST SP 800-37 Rev. 2 and RMF Authorize","evidence_types":["authorization_decision","risk_acceptance","poam"],"verification_mode":"document"},
+    {"key":"fisma.monitor","title":"Continuous monitoring","description":"Monitor control effectiveness, changes, vulnerabilities, incidents, and risk on an established cadence.","type":"obligation","category":"RMF","source_reference":"NIST SP 800-37 Rev. 2 and RMF Monitor","evidence_types":["monitoring_plan","technical_measurement","change_record","vulnerability_report"],"verification_mode":"technical"},
+    {"key":"fisma.poam","title":"Track remediation and risk","description":"Track weaknesses, corrective actions, milestones, owners, and residual risk through closure or acceptance.","type":"obligation","category":"Governance","source_reference":"FISMA continuous monitoring and agency POA&M policy","evidence_types":["poam","finding_record","risk_acceptance"],"verification_mode":"hybrid"},
+    {"key":"fisma.report","title":"Report security status","description":"Provide current security status and incident or risk reporting required by agency policy and FISMA oversight.","type":"obligation","category":"Governance","source_reference":"FISMA and applicable agency reporting policy","evidence_types":["reporting_package","incident_record","management_review"],"verification_mode":"hybrid"}
+  ]
+}

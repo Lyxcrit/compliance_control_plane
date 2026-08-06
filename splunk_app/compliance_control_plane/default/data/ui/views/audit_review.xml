@@ -1,0 +1,59 @@
+<form version="1.1" theme="light" stylesheet="app.css">
+  <label>Audit Review</label>
+  <description>Current pass, partial, fail, and not-assessed status by requirement.</description>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="framework_token" searchWhenChanged="true">
+      <label>Framework</label>
+      <choice value="*">All active frameworks</choice>
+      <fieldForLabel>framework_name</fieldForLabel>
+      <fieldForValue>framework_key</fieldForValue>
+      <search><query>| inputlookup framework_catalog.csv | lookup ccp_framework_selections framework_key OUTPUT selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search status=active selected=1 | fields framework_key framework_name</query></search>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="system_token" searchWhenChanged="true">
+      <label>System</label>
+      <choice value="*">All active systems</choice>
+      <fieldForLabel>system_name</fieldForLabel>
+      <fieldForValue>system_key</fieldForValue>
+      <search><query>| inputlookup ccp_systems | search status=active | sort system_name | fields system_key system_name</query></search>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <search id="CCPAuditReviewBase">
+    <query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | join type=left framework_key requirement_key [| `ccp_latest_assessments` | where "$system_token$"="*" OR system_key="$system_token$" | fields framework_key requirement_key system_key status score assessor assessed_at reviewer reviewed_at notes] | join type=left framework_key requirement_key [| `ccp_evidence_rollup` | where "$system_token$"="*" OR system_key="$system_token$" | fields framework_key requirement_key system_key evidence_count] | eval status=coalesce(status,"Not assessed"), evidence_count=coalesce(evidence_count,0) | lookup policy_playbook.csv framework_key requirement_key OUTPUT implementation_title owner_role</query>
+  </search>
+  <row>
+    <panel>
+      <html><div class="ccp-page-header"><div class="ccp-eyebrow ccp-eyebrow-dark">AUDITOR VIEW</div><h1>Audit review</h1><p>Use the latest recorded assessment for each requirement. Not assessed is intentionally visible and never treated as pass.</p></div></html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Assessment basis</title>
+      <table>
+        <search><query>| inputlookup framework_assessment_profiles.csv | lookup framework_catalog.csv framework_key OUTPUT framework_name version | search framework_key="$framework_token$" OR "$framework_token$"="*" | table framework_name version assessment_granularity assessment_methods scoring_model required_artifacts audit_boundary | rename framework_name as Framework version as Version assessment_granularity as "Assessment level" assessment_methods as "Assessment methods" scoring_model as "Decision model" required_artifacts as "Artifacts expected" audit_boundary as "Audit boundary"</query></search>
+        <option name="count">10</option><option name="wrap">true</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel><single><title>Requirements</title><search base="CCPAuditReviewBase"><query>| stats count</query></search><option name="underLabel">in scope</option><option name="colorMode">block</option><option name="useColors">1</option><option name="rangeColors">["#235789","#235789"]</option></single></panel>
+    <panel><single><title>Pass</title><search base="CCPAuditReviewBase"><query>| search status="Pass" | stats count</query></search><option name="underLabel">current status</option><option name="colorMode">block</option><option name="useColors">1</option><option name="rangeColors">["#18794e","#18794e"]</option></single></panel>
+    <panel><single><title>Partial or fail</title><search base="CCPAuditReviewBase"><query>| search status="Partial" OR status="Fail" | stats count</query></search><option name="underLabel">owner action required</option><option name="colorMode">block</option><option name="useColors">1</option><option name="rangeColors">["#d1495b","#d1495b"]</option></single></panel>
+    <panel><single><title>Not assessed</title><search base="CCPAuditReviewBase"><query>| search status="Not assessed" | stats count</query></search><option name="underLabel">cannot be attested</option><option name="colorMode">block</option><option name="useColors">1</option><option name="rangeColors">["#6c757d","#6c757d"]</option></single></panel>
+  </row>
+  <row>
+    <panel>
+      <title>Requirement status</title>
+      <table>
+        <search>
+          <query>| table requirement_key title category status score evidence_count assessor assessed_at reviewer reviewed_at implementation_title owner_role | rename requirement_key as "Check key" title as Requirement category as Category status as Status score as Score evidence_count as Evidence assessor as Assessor assessed_at as "Assessed at" reviewer as Reviewer reviewed_at as "Reviewed at" implementation_title as "Implementation" owner_role as "Suggested owner"</query>
+        </search>
+        <option name="count">12</option>
+        <option name="wrap">true</option>
+        <option name="drilldown">row</option>
+        <drilldown><link target="_blank">/app/compliance_control_plane/check?requirement_token=$row.requirement_key$&amp;framework_token=$framework_token$&amp;system_token=$system_token$</link></drilldown>
+      </table>
+    </panel>
+  </row>
+</form>

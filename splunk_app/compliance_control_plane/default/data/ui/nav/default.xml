@@ -1,0 +1,22 @@
+<nav search_view="home">
+  <view name="home" default="true" />
+  <view name="setup" />
+  <collection label="Checks">
+    <view name="requirements" />
+    <view name="check" />
+  </collection>
+  <collection label="Posture">
+    <view name="audit_review" />
+    <view name="readiness" />
+  </collection>
+  <collection label="Evidence and remediation">
+    <view name="assessment" />
+    <view name="evidence" />
+    <view name="findings" />
+  </collection>
+  <view name="audit_package" />
+  <collection label="Framework measurements">
+    <view name="measurements" />
+    <view name="technical_coverage" />
+  </collection>
+</nav>

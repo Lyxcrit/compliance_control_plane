@@ -1,0 +1,69 @@
+canonical_control_key,canonical_control_name,description,mapping_status,mapping_type,mapping_confidence
+category.7012,7012,Shared control area for 7012 across framework content.,provisional,contextual,medium
+category.7019,7019,Shared control area for 7019 across framework content.,provisional,contextual,medium
+category.7020,7020,Shared control area for 7020 across framework content.,provisional,contextual,medium
+category.7021,7021,Shared control area for 7021 across framework content.,provisional,contextual,medium
+category.access-control,Access Control,Shared control area for Access Control across framework content.,provisional,rollup,medium
+category.application-security,Application security,Shared control area for Application security across framework content.,provisional,rollup,medium
+category.assessment,Assessment,Shared control area for Assessment across framework content.,provisional,rollup,medium
+category.assessment-and-monitoring,Assessment and Monitoring,Shared control area for Assessment and Monitoring across framework content.,provisional,rollup,high
+category.asset-management,Asset management,Shared control area for Asset management across framework content.,provisional,rollup,medium
+category.assurance,Assurance,Shared control area for Assurance across framework content.,provisional,rollup,medium
+category.audit-and-accountability,Audit and Accountability,Shared control area for Audit and Accountability across framework content.,provisional,rollup,medium
+category.awareness-and-training,Awareness and Training,Shared control area for Awareness and Training across framework content.,provisional,rollup,medium
+category.baseline,baseline,Shared control area for baseline across framework content.,provisional,rollup,medium
+category.cem,cem,Shared control area for cem across framework content.,provisional,rollup,medium
+category.collection,collection,Shared control area for collection across framework content.,provisional,rollup,medium
+category.communications-protection,Communications Protection,Shared control area for Communications Protection across framework content.,provisional,rollup,medium
+category.configuration,Configuration,Shared control area for Configuration across framework content.,provisional,rollup,medium
+category.configuration-management,Configuration management,Shared control area for Configuration management across framework content.,provisional,rollup,medium
+category.contingency-planning,Contingency Planning,Shared control area for Contingency Planning across framework content.,provisional,rollup,high
+category.cryptography,Cryptography,Shared control area for Cryptography across framework content.,provisional,rollup,medium
+category.data-protection,Data protection,Shared control area for Data protection across framework content.,provisional,rollup,medium
+category.detect,Detect,Shared control area for Detect across framework content.,provisional,rollup,high
+category.govern,Govern,Shared control area for Govern across framework content.,provisional,rollup,high
+category.governance,Governance,Shared control area for Governance across framework content.,provisional,contextual,medium
+category.identification-and-authentication,Identification and Authentication,Shared control area for Identification and Authentication across framework content.,provisional,rollup,medium
+category.identify,Identify,Shared control area for Identify across framework content.,provisional,rollup,high
+category.identity,Identity,Shared control area for Identity across framework content.,provisional,rollup,medium
+category.incident-response,Incident response,Shared control area for Incident response across framework content.,provisional,rollup,medium
+category.inventory,inventory,Shared control area for inventory across framework content.,provisional,rollup,medium
+category.logging,Logging,Shared control area for Logging across framework content.,provisional,rollup,medium
+category.maintenance,Maintenance,Shared control area for Maintenance across framework content.,provisional,rollup,medium
+category.malware,Malware,Shared control area for Malware across framework content.,provisional,rollup,medium
+category.management,management,Shared control area for management across framework content.,provisional,rollup,medium
+category.media-protection,Media Protection,Shared control area for Media Protection across framework content.,provisional,rollup,medium
+category.network,Network,Shared control area for Network across framework content.,provisional,rollup,medium
+category.network-security,Network Security,Shared control area for Network Security across framework content.,provisional,rollup,medium
+category.operations,operations,Shared control area for operations across framework content.,provisional,rollup,medium
+category.organizational-controls,Organizational Controls,Shared control area for Organizational Controls across framework content.,provisional,contextual,medium
+category.people,People,Shared control area for People across framework content.,provisional,rollup,medium
+category.people-controls,People Controls,Shared control area for People Controls across framework content.,provisional,contextual,medium
+category.personnel-security,Personnel Security,Shared control area for Personnel Security across framework content.,provisional,rollup,medium
+category.physical-controls,Physical Controls,Shared control area for Physical Controls across framework content.,provisional,contextual,medium
+category.physical-protection,Physical Protection,Shared control area for Physical Protection across framework content.,provisional,rollup,medium
+category.physical-security,Physical Security,Shared control area for Physical Security across framework content.,provisional,rollup,medium
+category.planning,Planning,Shared control area for Planning across framework content.,provisional,rollup,medium
+category.privacy,Privacy,Shared control area for Privacy across framework content.,provisional,rollup,high
+category.program-management,Program Management,Shared control area for Program Management across framework content.,provisional,rollup,high
+category.protect,Protect,Shared control area for Protect across framework content.,provisional,rollup,high
+category.protection,Protection,Shared control area for Protection across framework content.,provisional,rollup,medium
+category.recover,Recover,Shared control area for Recover across framework content.,provisional,rollup,high
+category.recovery,Recovery,Shared control area for Recovery across framework content.,provisional,rollup,medium
+category.respond,Respond,Shared control area for Respond across framework content.,provisional,rollup,high
+category.retention,retention,Shared control area for retention across framework content.,provisional,rollup,medium
+category.risk-assessment,Risk Assessment,Shared control area for Risk Assessment across framework content.,provisional,rollup,medium
+category.rmf,RMF,Shared control area for RMF across framework content.,provisional,contextual,medium
+category.security-assessment-and-monitoring,Security Assessment and Monitoring,Shared control area for Security Assessment and Monitoring across framework content.,provisional,rollup,medium
+category.software-security,Software Security,Shared control area for Software Security across framework content.,provisional,rollup,medium
+category.supply-chain,Supply chain,Shared control area for Supply chain across framework content.,provisional,contextual,medium
+category.supply-chain-risk-management,Supply Chain Risk Management,Shared control area for Supply Chain Risk Management across framework content.,provisional,rollup,medium
+category.system-acquisition,System Acquisition,Shared control area for System Acquisition across framework content.,provisional,rollup,high
+category.system-and-communications-protection,System and Communications Protection,Shared control area for System and Communications Protection across framework content.,provisional,rollup,medium
+category.system-and-information-integrity,System and Information Integrity,Shared control area for System and Information Integrity across framework content.,provisional,rollup,medium
+category.system-integrity,System Integrity,Shared control area for System Integrity across framework content.,provisional,rollup,medium
+category.technological-controls,Technological Controls,Shared control area for Technological Controls across framework content.,provisional,contextual,medium
+category.testing,Testing,Shared control area for Testing across framework content.,provisional,rollup,medium
+category.third-party,Third party,Shared control area for Third party across framework content.,provisional,rollup,medium
+category.thirf,thirf,Shared control area for thirf across framework content.,provisional,rollup,medium
+category.vulnerability-management,Vulnerability management,Shared control area for Vulnerability management across framework content.,provisional,rollup,medium

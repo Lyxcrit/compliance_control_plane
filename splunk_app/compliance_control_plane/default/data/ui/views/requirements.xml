@@ -1,0 +1,62 @@
+<form version="1.1" theme="light" stylesheet="app.css">
+  <label>Requirement Explorer</label>
+  <description>Explore requirements, evidence expectations, and implementation guidance.</description>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="framework_token" searchWhenChanged="true">
+      <label>Framework</label>
+      <choice value="">Select a framework</choice>
+      <fieldForLabel>framework_name</fieldForLabel>
+      <fieldForValue>framework_key</fieldForValue>
+      <search><query>| inputlookup framework_catalog.csv | lookup ccp_framework_selections framework_key OUTPUT selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search status=active selected=1 | fields framework_key framework_name</query></search>
+      <default></default>
+      <change>
+        <condition match="'value' != &quot;&quot;"><set token="framework_selected">true</set><unset token="form.category_token" /><unset token="category_token" /><set token="form.category_token">*</set><set token="category_token">*</set></condition>
+        <condition match="'value' == &quot;&quot;"><unset token="framework_selected" /></condition>
+      </change>
+    </input>
+    <input type="dropdown" token="category_token" searchWhenChanged="true">
+      <label>Category</label>
+      <choice value="__select_framework__">Select a framework first</choice>
+      <choice value="*">All categories</choice>
+      <fieldForLabel>category</fieldForLabel>
+      <fieldForValue>category</fieldForValue>
+      <search><query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | dedup category | sort category | fields category</query></search>
+      <default>__select_framework__</default>
+    </input>
+    <input type="dropdown" token="verification_token" searchWhenChanged="true">
+      <label>How to prove it</label>
+      <choice value="*">All verification routes</choice>
+      <choice value="document">Document review</choice>
+      <choice value="technical">Splunk tracking</choice>
+      <choice value="hybrid">Document + Splunk tracking</choice>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <row depends="$framework_selected$">
+    <panel>
+      <title>Requirements and implementation path</title>
+      <table id="ccp_requirements_table">
+        <search>
+          <query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | search category="$category_token$" OR "$category_token$"="*" | search verification_mode="$verification_token$" OR "$verification_token$"="*" | lookup policy_playbook.csv framework_key requirement_key OUTPUT implementation_title implementation_steps validation_method owner_role common_gap | lookup framework_assessment_profiles.csv framework_key OUTPUT assessment_granularity assessment_methods scoring_model required_artifacts audit_boundary authority_statement | table framework_name requirement_key title requirement_type verification_label verification_guidance description evidence_types implementation_title implementation_steps validation_method owner_role common_gap source_reference assessment_granularity assessment_methods scoring_model required_artifacts audit_boundary authority_statement | rename framework_name as Framework title as Requirement requirement_type as Type verification_label as "How to prove it" verification_guidance as "Verification guidance" description as Description evidence_types as "Evidence expected" implementation_title as "Implementation" implementation_steps as "Implementation steps" validation_method as "How to validate" owner_role as "Suggested owner" common_gap as "Common gap" source_reference as "Source reference" assessment_granularity as "Assessment level" assessment_methods as "Assessment methods" scoring_model as "Decision model" required_artifacts as "Artifacts expected" audit_boundary as "Audit boundary" authority_statement as "Content status" | transpose | rename column as " ", "row *" as " *"</query>
+        </search>
+        <option name="count">30</option>
+        <option name="wrap">true</option>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row depends="$framework_selected$">
+    <panel>
+      <title>Open a check</title>
+      <table id="ccp_requirements_open_table">
+        <search>
+          <query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | search category="$category_token$" OR "$category_token$"="*" | search verification_mode="$verification_token$" OR "$verification_token$"="*" | eval action="Open check" | table framework_key framework_name requirement_key title verification_label action | rename framework_name as Framework title as Requirement verification_label as "How to prove it" action as Action</query>
+        </search>
+        <option name="count">20</option>
+        <option name="wrap">true</option>
+        <option name="drilldown">row</option>
+        <drilldown><link target="_blank">/app/compliance_control_plane/check?framework_token=$row.framework_key$&amp;requirement_token=$row.requirement_key$</link></drilldown>
+      </table>
+    </panel>
+  </row>
+</form>

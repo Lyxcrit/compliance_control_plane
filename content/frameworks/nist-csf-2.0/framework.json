@@ -1,0 +1,18 @@
+{
+  "key": "nist-csf-2.0",
+  "name": "NIST Cybersecurity Framework",
+  "version": "2.0",
+  "authority": "National Institute of Standards and Technology",
+  "description": "Outcome-oriented cybersecurity risk management organized around Govern, Identify, Protect, Detect, Respond, and Recover.",
+  "source_url": "https://www.nist.gov/publications/nist-cybersecurity-framework-csf-20",
+  "content_status": "foundational",
+  "default_selected": 0,
+  "requirements": [
+    {"key":"csf.govern","title":"Govern","description":"Establish and monitor cybersecurity risk strategy, expectations, policy, and accountability.","type":"outcome","category":"Govern","source_reference":"NIST CSF 2.0 Core: Govern","evidence_types":["risk_strategy","policy_register","governance_minutes"],"verification_mode":"document","verification_guidance":"Review the approved cybersecurity strategy, policy register, accountable owners, governance decisions, and review cadence. A policy without operating evidence is not a pass."},
+    {"key":"csf.identify","title":"Identify","description":"Understand the organization, assets, risks, and dependencies that require cybersecurity management.","type":"outcome","category":"Identify","source_reference":"NIST CSF 2.0 Core: Identify","evidence_types":["asset_inventory","risk_register","business_context"],"verification_mode":"hybrid","verification_guidance":"Review the risk and business context documents, then confirm asset and dependency coverage with current inventory evidence."},
+    {"key":"csf.protect","title":"Protect","description":"Use safeguards to manage cybersecurity risks and limit the impact of potential events.","type":"outcome","category":"Protect","source_reference":"NIST CSF 2.0 Core: Protect","evidence_types":["control_evidence","configuration_state","training_record"]},
+    {"key":"csf.detect","title":"Detect","description":"Find and analyze possible cybersecurity attacks and compromises in a timely manner.","type":"outcome","category":"Detect","source_reference":"NIST CSF 2.0 Core: Detect","evidence_types":["detection_inventory","alert_history","monitoring_review"],"verification_mode":"technical","verification_guidance":"Use Splunk tracking to show detection coverage, alert history, review activity, and unresolved monitoring gaps."},
+    {"key":"csf.respond","title":"Respond","description":"Take action regarding a detected cybersecurity incident.","type":"outcome","category":"Respond","source_reference":"NIST CSF 2.0 Core: Respond","evidence_types":["incident_record","response_plan","exercise_record"]},
+    {"key":"csf.recover","title":"Recover","description":"Restore assets and operations affected by a cybersecurity incident.","type":"outcome","category":"Recover","source_reference":"NIST CSF 2.0 Core: Recover","evidence_types":["recovery_plan","restore_test","lessons_learned"]}
+  ]
+}

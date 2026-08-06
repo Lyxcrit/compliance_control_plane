@@ -1,0 +1,92 @@
+[
+  {
+    "check_key": "splunk.index_retention",
+    "display_name": "Index retention configuration",
+    "measurement_key": "index_retention_configuration",
+    "adapter_key": "splunk.index_retention",
+    "evidence_type": "index_retention",
+    "search": "| rest /services/data/indexes splunk_server=local | search disabled=0 NOT title=\"_*\" | eval retention_days=round(frozenTimePeriodInSecs/86400,1), target_days=180 | stats count as total_indexes count(eval(retention_days>=target_days)) as meeting_target min(retention_days) as minimum_retention | eval status=case(total_indexes=0,\"Not assessed\",meeting_target=total_indexes,\"Pass\",meeting_target>0,\"Partial\",1=1,\"Fail\"), observed=meeting_target.\" of \".total_indexes.\" active indexes meet the 180-day retrieval target\", expected=\"All active non-internal indexes meet 180 days\", details=\"Minimum configured retention: \".coalesce(minimum_retention,\"not measured\").\" days\" | table status observed expected details",
+    "expected_value": "All active non-internal indexes meet 180 days",
+    "limitations": "Configured retention does not prove historical searchability or a successful restore test. The 180-day target is the default level-1 retrieval target; select the applicable maturity target before using this as an audit conclusion."
+  },
+  {
+    "check_key": "splunk.recent_index_activity",
+    "display_name": "Recent indexed activity",
+    "measurement_key": "recent_index_activity",
+    "adapter_key": "splunk.recent_index_activity",
+    "evidence_type": "recent_index_activity",
+    "search": "| tstats summariesonly=false count where index=* earliest=-24h latest=now by index | stats dc(index) as indexes_with_events sum(count) as events | eval status=case(indexes_with_events>0,\"Pass\",1=1,\"Not assessed\"), observed=indexes_with_events.\" indexes received \".events.\" events in the last 24 hours\", expected=\"At least one in-scope index has recent activity\", details=\"24-hour activity signal only\" | table status observed expected details",
+    "expected_value": "At least one in-scope index has recent activity",
+    "limitations": "Recent activity does not prove complete source coverage, source freshness, or retention."
+  },
+  {
+    "check_key": "splunk.host_metadata",
+    "display_name": "Splunk host metadata inventory",
+    "measurement_key": "cim_endpoint_inventory",
+    "adapter_key": "splunk.host_metadata",
+    "evidence_type": "asset_inventory",
+    "search": "| metadata type=hosts index=* | stats dc(host) as hosts | eval status=case(hosts>0,\"Pass\",1=1,\"Not assessed\"), observed=hosts.\" hosts observed in Splunk metadata\", expected=\"At least one host is observed\", details=\"Host metadata is an observed inventory signal\" | table status observed expected details",
+    "expected_value": "At least one host is observed",
+    "limitations": "Host metadata is an observed inventory signal, not an authoritative system boundary or complete endpoint inventory."
+  },
+  {
+    "check_key": "splunk.exposure_analytics",
+    "display_name": "Exposure Analytics inventory",
+    "measurement_key": "exposure_analytics_inventory",
+    "adapter_key": "splunk.exposure_analytics",
+    "evidence_type": "asset_inventory",
+    "search": "index=ea_discovery earliest=-24h latest=now | stats count as events dc(ip_key) as ip_assets dc(nt_host) as host_assets dc(mac) as mac_assets dc(user_key) as user_assets | eval status=case(events>0,\"Pass\",1=1,\"Not assessed\"), observed=events.\" recent discovery events; hosts=\".host_assets.\", ip=\".ip_assets.\", mac=\".mac_assets.\", users=\".user_assets, expected=\"Exposure Analytics produces recent discovery data\", details=\"24-hour discovery signal\" | table status observed expected details",
+    "expected_value": "Exposure Analytics produces recent discovery data",
+    "limitations": "Coverage depends on Exposure Analytics discovery jobs and the approved system boundary. Recent records do not prove all asset classes are represented."
+  },
+  {
+    "check_key": "splunk.exposure_analytics_freshness",
+    "display_name": "Exposure Analytics source freshness",
+    "measurement_key": "exposure_analytics_inventory",
+    "adapter_key": "splunk.exposure_analytics_freshness",
+    "evidence_type": "searchability_check",
+    "search": "index=ea_discovery earliest=-24h latest=now | stats count as events latest(_time) as latest_event | eval age_minutes=round((now()-latest_event)/60,1), status=case(events=0,\"Not assessed\",age_minutes<=1440,\"Pass\",1=1,\"Fail\"), observed=events.\" events; latest event \".age_minutes.\" minutes ago\", expected=\"Discovery data is no more than 24 hours old\", details=\"Freshness is measured against the latest event\" | table status observed expected details",
+    "expected_value": "Discovery data is no more than 24 hours old",
+    "limitations": "Fresh records do not prove that all expected asset classes or systems are represented."
+  },
+  {
+    "check_key": "splunk.authentication_activity",
+    "display_name": "Authentication monitoring activity",
+    "measurement_key": "authentication_monitoring",
+    "adapter_key": "splunk.authentication_activity",
+    "evidence_type": "monitoring_activity",
+    "search": "| tstats summariesonly=false count where index=* earliest=-24h latest=now by sourcetype | search sourcetype=*auth* OR sourcetype=*login* OR sourcetype=*authentication* | stats sum(count) as events dc(sourcetype) as sources | eval status=case(events>0,\"Pass\",1=1,\"Not assessed\"), observed=events.\" authentication events from \".sources.\" source types in the last 24 hours\", expected=\"Authentication activity is searchable and monitored\", details=\"24-hour signal only; tune sourcetypes to the approved boundary\" | table status observed expected details",
+    "expected_value": "Authentication activity is searchable and monitored",
+    "limitations": "The generic sourcetype filter is a discovery signal and does not prove complete identity, MFA, or privileged-account coverage."
+  },
+  {
+    "check_key": "splunk.detection_activity",
+    "display_name": "Detection and alert monitoring activity",
+    "measurement_key": "detection_monitoring",
+    "adapter_key": "splunk.detection_activity",
+    "evidence_type": "monitoring_activity",
+    "search": "| tstats summariesonly=false count where index=* earliest=-24h latest=now by sourcetype | search sourcetype=*alert* OR sourcetype=*notable* OR sourcetype=*detection* OR sourcetype=*risk* | stats sum(count) as events dc(sourcetype) as sources | eval status=case(events>0,\"Pass\",1=1,\"Not assessed\"), observed=events.\" detection-related events from \".sources.\" source types in the last 24 hours\", expected=\"Detection or alert activity is searchable\", details=\"24-hour signal only; validate coverage against the approved detection inventory\" | table status observed expected details",
+    "expected_value": "Detection or alert activity is searchable",
+    "limitations": "Event activity does not prove that required detections exist, are tuned, or are reviewed within the required response window."
+  },
+  {
+    "check_key": "splunk.privileged_activity",
+    "display_name": "Privileged activity monitoring",
+    "measurement_key": "privileged_activity_monitoring",
+    "adapter_key": "splunk.privileged_activity",
+    "evidence_type": "monitoring_activity",
+    "search": "| tstats summariesonly=false count where index=* earliest=-24h latest=now by sourcetype | search sourcetype=*audit* OR sourcetype=*admin* OR sourcetype=*sudo* OR sourcetype=*privilege* | stats sum(count) as events dc(sourcetype) as sources | eval status=case(events>0,\"Pass\",1=1,\"Not assessed\"), observed=events.\" privileged or audit events from \".sources.\" source types in the last 24 hours\", expected=\"Privileged activity is searchable and monitored\", details=\"24-hour signal only; validate account and command coverage\" | table status observed expected details",
+    "expected_value": "Privileged activity is searchable and monitored",
+    "limitations": "Generic sourcetype discovery does not prove that all privileged identities, commands, or administrative systems are covered."
+  },
+  {
+    "check_key": "splunk.vulnerability_activity",
+    "display_name": "Vulnerability monitoring activity",
+    "measurement_key": "vulnerability_monitoring",
+    "adapter_key": "splunk.vulnerability_activity",
+    "evidence_type": "monitoring_activity",
+    "search": "| tstats summariesonly=false count where index=* earliest=-24h latest=now by sourcetype | search sourcetype=*vuln* OR sourcetype=*nessus* OR sourcetype=*qualys* OR sourcetype=*tenable* | stats sum(count) as events dc(sourcetype) as sources | eval status=case(events>0,\"Pass\",1=1,\"Not assessed\"), observed=events.\" vulnerability events from \".sources.\" source types in the last 24 hours\", expected=\"Vulnerability monitoring data is searchable\", details=\"24-hour signal only; validate scan cadence and asset denominator\" | table status observed expected details",
+    "expected_value": "Vulnerability monitoring data is searchable",
+    "limitations": "Recent vulnerability events do not prove scan completeness, remediation timeliness, or an authoritative asset denominator."
+  }
+]

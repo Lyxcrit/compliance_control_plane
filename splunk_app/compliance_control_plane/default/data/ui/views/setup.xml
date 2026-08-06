@@ -1,0 +1,99 @@
+<dashboard version="1.1" theme="light" script="setup.js" stylesheet="app.css">
+  <label>Framework Setup</label>
+  <description>Choose the framework content your organization uses and wants visible in the app.</description>
+  <search id="CCPSetupScopes"><query>| inputlookup ccp_scopes | search status=active | sort scope_name | table scope_key scope_name</query></search>
+  <row>
+    <panel>
+      <html>
+        <div class="ccp-page-header">
+          <div class="ccp-eyebrow ccp-eyebrow-dark">APP SETUP</div>
+          <h1>Choose your frameworks</h1>
+          <p>Select only the frameworks that apply to your organization. Unselected frameworks stay out of navigation, filters, and posture counts.</p>
+        </div>
+        <div id="ccp-framework-list" class="ccp-framework-list"><div class="ccp-loading">Loading framework content...</div></div>
+        <div class="ccp-form-actions"><button id="ccp-save-frameworks" class="btn btn-primary" type="button">Save framework selection</button><span id="ccp-framework-message" role="status"></span></div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <div class="ccp-section-heading">
+          <div class="ccp-eyebrow ccp-eyebrow-dark">AUDIT SCOPE</div>
+          <h2>Define an audit boundary</h2>
+          <p>Assessments and evidence must identify the environment they support. Use a stable scope key that matches your system or asset boundary.</p>
+        </div>
+        <div class="ccp-form-grid">
+          <label>Scope key<input id="ccp-scope-key" type="text" placeholder="prod-security-boundary" /></label>
+          <label>Scope name<input id="ccp-scope-name" type="text" placeholder="Production security boundary" /></label>
+          <label>Scope type<select id="ccp-scope-type"><option value="organization">Organization</option><option value="environment">Environment</option><option value="business_unit">Business unit</option><option value="system">System</option><option value="asset_group">Asset group</option><option value="data_boundary">Data boundary</option></select></label>
+          <label>Owner<input id="ccp-scope-owner" type="text" placeholder="security-governance" /></label>
+          <label class="ccp-field-wide">Description<textarea id="ccp-scope-description" rows="3" placeholder="What systems, assets, data, and exclusions are in this boundary?"></textarea></label>
+        </div>
+        <div class="ccp-form-actions"><button id="ccp-save-scope" class="btn btn-secondary" type="button">Save audit scope</button><span id="ccp-scope-message" role="status"></span></div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Configured audit scopes</title>
+      <table><search><query>| inputlookup ccp_scopes | sort scope_name | table scope_key scope_name scope_type owner status updated_at</query></search><option name="count">10</option><option name="drilldown">none</option></table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <div class="ccp-section-heading">
+          <div class="ccp-eyebrow ccp-eyebrow-dark">SYSTEM INVENTORY</div>
+          <h2>Register an assessed system</h2>
+          <p>Use this lightweight record to connect assessments and evidence to an accountable system inside an audit scope.</p>
+        </div>
+        <div class="ccp-form-grid">
+          <label>System key<input id="ccp-system-record-key" type="text" placeholder="prod-splunk-search" /></label>
+          <label>System name<input id="ccp-system-record-name" type="text" placeholder="Production Splunk search platform" /></label>
+          <label>Audit scope<select id="ccp-system-record-scope"><option value="">Loading active scopes...</option></select></label>
+          <label>System type<select id="ccp-system-record-type"><option value="application">Application</option><option value="platform">Platform</option><option value="service">Shared service</option><option value="infrastructure">Infrastructure</option><option value="data_store">Data store</option><option value="identity">Identity service</option><option value="endpoint">Endpoint platform</option></select></label>
+          <label>Environment<select id="ccp-system-record-environment"><option value="production">Production</option><option value="staging">Staging</option><option value="development">Development</option><option value="shared">Shared</option><option value="third_party">Third party</option></select></label>
+          <label>Business owner<input id="ccp-system-record-business-owner" type="text" placeholder="chief-information-security-office" /></label>
+          <label>Technical owner<input id="ccp-system-record-technical-owner" type="text" placeholder="platform-engineering" /></label>
+          <label>Evidence owner<input id="ccp-system-record-owner" type="text" placeholder="security-operations" /></label>
+          <label>Criticality<select id="ccp-system-record-criticality"><option>High</option><option>Medium</option><option>Low</option></select></label>
+          <label>Data classification<select id="ccp-system-record-classification"><option value="restricted">Restricted</option><option value="confidential">Confidential</option><option value="internal">Internal</option><option value="public">Public</option><option value="unknown">Unknown</option></select></label>
+          <label>Regulatory impact<select id="ccp-system-record-regulatory-impact"><option value="high">High</option><option value="moderate">Moderate</option><option value="low">Low</option><option value="unknown">Unknown</option></select></label>
+          <label class="ccp-field-wide">System description<textarea id="ccp-system-record-description" rows="3" placeholder="What the system does, what data it processes, and why it is in this audit scope."></textarea></label>
+        </div>
+        <div class="ccp-form-actions"><button id="ccp-save-system" class="btn btn-secondary" type="button">Save system</button><span id="ccp-system-message" role="status"></span></div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Configured systems</title>
+      <table><search><query>| inputlookup ccp_systems | sort system_name | table system_key system_name scope_key system_type environment business_owner technical_owner owner criticality data_classification regulatory_impact status updated_at</query></search><option name="count">15</option><option name="drilldown">none</option></table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Optional Splunk capabilities</title>
+      <table>
+        <search><query>| inputlookup integration_catalog.csv | table display_name capability optional_dependency status limitations | rename display_name as Capability capability as "Used for" optional_dependency as Dependency status as "Catalog state" limitations as Limitations</query></search>
+        <option name="count">10</option><option name="wrap">true</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+    <panel>
+      <html><div class="ccp-callout ccp-callout-info"><strong>Optional means optional:</strong> the core app does not require Enterprise Security, Exposure Analytics, or CIM. Adapters report missing data as Not assessed or Not configured; they do not turn missing products into a failure.</div></html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Integration health</title>
+      <table>
+        <search><query>| inputlookup ccp_integration_health | sort integration_key | table integration_key capability status observed_value checked_at source limitations | rename integration_key as Integration capability as Capability status as Status observed_value as Observed checked_at as "Checked at" source as Source limitations as Limitations</query></search>
+        <option name="count">10</option><option name="wrap">true</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+    <panel>
+      <html><div class="ccp-callout ccp-callout-info"><strong>Interpretation:</strong> integration health describes whether a data capability is available. It never determines whether a control passes.</div></html>
+    </panel>
+  </row>
+</dashboard>

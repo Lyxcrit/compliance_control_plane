@@ -1,0 +1,42 @@
+<dashboard version="1.1" theme="light" script="findings.js" stylesheet="app.css">
+  <label>Findings and Remediation</label>
+  <description>Turn failed or incomplete controls into owned, time-bound remediation work.</description>
+  <search id="CCPFindingFrameworks"><query>| inputlookup framework_catalog.csv | lookup ccp_framework_selections framework_key OUTPUT selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search status=active selected=1 | table framework_key framework_name version</query></search>
+  <search id="CCPFindingRequirements"><query>| inputlookup requirements.csv | lookup ccp_framework_selections framework_key OUTPUT selected | lookup ccp_framework_catalog framework_key OUTPUT default_selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search selected=1 | table framework_key requirement_key title</query></search>
+  <search id="CCPFindingScopes"><query>| inputlookup ccp_scopes | search status=active | table scope_key scope_name</query></search>
+  <row>
+    <panel>
+      <html>
+          <div class="ccp-page-header"><div class="ccp-eyebrow ccp-eyebrow-dark">REMEDIATION WORKFLOW</div><h1>Track what must be fixed</h1><p>Every finding needs an accountable owner, a due date, a remediation action, and a retest. Risk acceptance is a recorded decision, not a hidden failure.</p></div>
+          <div class="ccp-callout ccp-callout-info"><strong>Use this page when:</strong> a check is Partial or Fail, a measurement is below target, or an exception needs an accountable owner. Record the specific change required to pass, the due date, and how it will be retested. Failed assessments and measurements can create findings automatically.</div>
+        <div class="ccp-form-grid">
+          <label>Finding key<input id="ccp-finding-key" type="text" placeholder="finding-2026-0001" /></label>
+          <label>Audit scope <span class="ccp-help" title="The boundary where the gap exists.">i</span><select id="ccp-finding-scope"><option value="">Loading scopes...</option></select></label>
+          <label>Framework <span class="ccp-help" title="The framework containing the affected check.">i</span><select id="ccp-finding-framework"><option value="">Loading frameworks...</option></select></label>
+          <label>Framework version<input id="ccp-finding-version" type="text" readonly="readonly" placeholder="Select a framework" /></label>
+          <label>Check <span class="ccp-help" title="The requirement that is not yet passing.">i</span><select id="ccp-finding-requirement"><option value="">Select a framework first</option></select></label>
+          <label>Title<input id="ccp-finding-title" type="text" placeholder="Log source coverage gap" /></label>
+          <label>Severity<select id="ccp-finding-severity"><option>High</option><option>Medium</option><option>Low</option><option>Informational</option></select></label>
+          <label>Status<select id="ccp-finding-status"><option>Open</option><option>In progress</option><option>Risk accepted</option><option>Resolved</option><option>Closed</option></select></label>
+          <label>Owner<input id="ccp-finding-owner" type="text" placeholder="security-operations" /></label>
+          <label>Owner kind<select id="ccp-finding-owner-kind"><option value="team">Team</option><option value="person">Person</option><option value="service">Service owner</option></select></label>
+          <label>Owner role<select id="ccp-finding-owner-role"><option value="control_owner">Control owner</option><option value="system_owner">System owner</option><option value="evidence_owner">Evidence owner</option><option value="risk_owner">Risk owner</option></select></label>
+          <label>Due at<input id="ccp-finding-due" type="text" placeholder="2026-09-30T00:00:00Z" /></label>
+          <label>Source<input id="ccp-finding-source" type="text" placeholder="Readiness, measurement, audit, or manual" /></label>
+          <label>Retest at<input id="ccp-finding-retest" type="text" placeholder="2026-09-20T00:00:00Z" /></label>
+          <label>Exception reference<input id="ccp-finding-exception" type="text" placeholder="risk-acceptance-123" /></label>
+          <label>Closed at<input id="ccp-finding-closed" type="text" placeholder="2026-09-25T00:00:00Z" /></label>
+          <label class="ccp-field-wide">Remediation <span class="ccp-help" title="Describe the concrete implementation change required to pass the check.">i</span><textarea id="ccp-finding-remediation" rows="3" placeholder="Describe the change required to pass the check."></textarea></label>
+          <label class="ccp-field-wide">Notes<textarea id="ccp-finding-notes" rows="3" placeholder="Scope, limitation, compensating control, or retest notes."></textarea></label>
+        </div>
+        <div class="ccp-form-actions"><button id="ccp-save-finding" class="btn btn-primary" type="button">Save finding</button><span id="ccp-finding-message" role="status"></span></div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Open and recently updated findings</title>
+      <table><search><query>| inputlookup ccp_findings | sort 0 due_at | table finding_key scope_key framework_key framework_version requirement_key title severity status owner owner_kind owner_role due_at remediation source exception_reference retest_at updated_at | rename finding_key as "Finding key" scope_key as Scope framework_key as Framework framework_version as Version requirement_key as "Check key" title as Finding severity as Severity status as Status owner as Owner owner_kind as "Owner kind" owner_role as "Owner role" due_at as Due remediation as Remediation source as Source exception_reference as Exception retest_at as Retest updated_at as Updated</query></search><option name="count">15</option><option name="wrap">true</option><option name="drilldown">none</option></table>
+    </panel>
+  </row>
+</dashboard>

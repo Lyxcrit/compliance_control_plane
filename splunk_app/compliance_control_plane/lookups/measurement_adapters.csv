@@ -1,0 +1,6 @@
+adapter_key,display_name,measurement_key,adapter_type,source,freshness_window,status,limitations
+splunk.index_retention,Splunk index retention,index_retention_configuration,rest_configuration,/services/data/indexes,current configuration,ready,Configured retention does not prove historical searchability or a successful restore test.
+splunk.recent_index_activity,Recent indexed activity,recent_index_activity,tstats,index=*,24h,ready,Recent activity does not prove complete source coverage or retention.
+splunk.host_metadata,Splunk host metadata inventory,cim_endpoint_inventory,metadata,metadata type=hosts,current metadata,ready,Host metadata is an observed inventory signal not an authoritative system boundary.
+splunk.exposure_analytics,Exposure Analytics inventory,exposure_analytics_inventory,event_search,index=ea_discovery,24h,ready,Coverage depends on Exposure Analytics discovery jobs and the approved scope.
+splunk.exposure_analytics_freshness,Exposure Analytics source freshness,exposure_analytics_inventory,event_search,index=ea_discovery,24h,ready,Fresh records do not prove that all expected asset classes are represented.

@@ -1,0 +1,19 @@
+{
+  "key": "dfars-cyber-clauses",
+  "name": "DFARS Cybersecurity Clauses",
+  "version": "252.204-7012 / 7019 / 7020 / 7021",
+  "authority": "U.S. Department of Defense / DFARS",
+  "description": "Contractual cyber obligations for covered defense information, cyber incident reporting, NIST SP 800-171 assessments, and CMMC applicability.",
+  "source_url": "https://www.acquisition.gov/dfars/204.7304-solicitation-provision-and-contract-clauses.",
+  "content_status": "foundational",
+  "default_selected": 0,
+  "requirements": [
+    {"key":"dfars.7012.covered-information","title":"Safeguard covered defense information","description":"Identify covered defense information and protect it on covered contractor information systems using the contractually applicable security requirements.","type":"obligation","category":"7012","source_reference":"DFARS 252.204-7012(b)","evidence_types":["data_flow","system_security_plan","control_evidence"],"verification_mode":"hybrid"},
+    {"key":"dfars.7012.incident-reporting","title":"Report cyber incidents","description":"Maintain the capability to identify, report, preserve, and support investigation of reportable cyber incidents within the required contract timeline.","type":"obligation","category":"7012","source_reference":"DFARS 252.204-7012(c)","evidence_types":["incident_record","reporting_procedure","preservation_record"],"verification_mode":"hybrid"},
+    {"key":"dfars.7012.evidence-preservation","title":"Preserve incident evidence","description":"Preserve images, relevant monitoring data, and other information needed for DoD forensic analysis after a reportable incident.","type":"obligation","category":"7012","source_reference":"DFARS 252.204-7012(c)(1)-(2)","evidence_types":["retention_policy","preservation_record","restore_test"],"verification_mode":"hybrid"},
+    {"key":"dfars.7019.assessment","title":"Maintain NIST assessment status","description":"Maintain the current NIST SP 800-171 DoD Assessment result and the contractual assessment evidence required for the covered system.","type":"obligation","category":"7019","source_reference":"DFARS 252.204-7019","evidence_types":["assessment_result","system_security_plan","score_record"],"verification_mode":"document"},
+    {"key":"dfars.7020.access","title":"Support DoD assessment access","description":"Maintain the system, records, and personnel access needed to support a DoD assessment when the clause applies.","type":"obligation","category":"7020","source_reference":"DFARS 252.204-7020","evidence_types":["assessment_plan","access_record","system_security_plan"],"verification_mode":"hybrid"},
+    {"key":"dfars.7020.flowdown","title":"Flow down applicable requirements","description":"Identify subcontractors and suppliers that receive covered information and document applicable clause flowdown and evidence responsibilities.","type":"obligation","category":"Supply chain","source_reference":"DFARS 252.204-7012 and 252.204-7020 flowdown provisions","evidence_types":["subcontract_register","flowdown_clause","supplier_attestation"],"verification_mode":"document"},
+    {"key":"dfars.7021.cmmc","title":"Determine CMMC applicability","description":"Determine whether the contract requires CMMC and retain the applicable level, scope, affirmation, and assessment evidence.","type":"obligation","category":"7021","source_reference":"DFARS 252.204-7021 and DFARS 204.7504","evidence_types":["contract_review","cmmc_scope","assessment_result"],"verification_mode":"hybrid"}
+  ]
+}

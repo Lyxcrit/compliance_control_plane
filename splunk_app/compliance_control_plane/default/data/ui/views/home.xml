@@ -1,0 +1,92 @@
+<form version="1.1" theme="light" stylesheet="app.css">
+  <label>Compliance Control Plane</label>
+  <description>Evidence readiness and operational compliance posture.</description>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="framework_token" searchWhenChanged="true">
+      <label>Framework</label>
+      <choice value="*">All active frameworks</choice>
+      <fieldForLabel>framework_name</fieldForLabel>
+      <fieldForValue>framework_key</fieldForValue>
+      <search><query>| inputlookup framework_catalog.csv | lookup ccp_framework_selections framework_key OUTPUT selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search status=active selected=1 | fields framework_key framework_name</query></search>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+        <div class="ccp-hero">
+          <div>
+            <div class="ccp-eyebrow">COMPLIANCE OPERATIONS</div>
+            <h1>Compliance Control Plane</h1>
+            <p>Turn framework language into owned, testable evidence and measurable telemetry coverage.</p>
+          </div>
+          <div class="ccp-hero-meta"><span class="ccp-status-dot"></span><span>Selected framework scope</span></div>
+        </div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Operating posture</title>
+      <html>
+        <div class="ccp-callout"><strong>Start with evidence.</strong> A requirement is not complete because a policy exists. Record the implementation steps, validation result, owner, and review date.</div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Requirements in scope</title>
+        <search><query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | stats count</query></search>
+        <option name="underLabel">content requirements</option>
+        <option name="colorMode">block</option>
+        <option name="useColors">1</option>
+        <option name="rangeColors">["#235789","#235789"]</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Evidence records</title>
+        <search><query>| inputlookup ccp_evidence | lookup ccp_framework_selections framework_key OUTPUT selected | lookup ccp_framework_catalog framework_key OUTPUT default_selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search selected=1 | search framework_key="$framework_token$" OR "$framework_token$"="*" | stats count</query><earliest>-30d@d</earliest><latest>now</latest></search>
+        <option name="underLabel">stored in the control plane</option>
+        <option name="colorMode">block</option>
+        <option name="useColors">1</option>
+        <option name="rangeColors">["#2a9d8f","#2a9d8f"]</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Open assessment gaps</title>
+        <search><query>| inputlookup ccp_assessments | lookup ccp_framework_selections framework_key OUTPUT selected | lookup ccp_framework_catalog framework_key OUTPUT default_selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search selected=1 | search status="Fail" OR status="Partial" | search framework_key="$framework_token$" OR "$framework_token$"="*" | stats count</query></search>
+        <option name="underLabel">require owner action</option>
+        <option name="colorMode">block</option>
+        <option name="useColors">1</option>
+        <option name="rangeColors">["#d1495b","#d1495b"]</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Systems tracked</title>
+        <search><query>| inputlookup ccp_systems | stats dc(system_key)</query></search>
+        <option name="underLabel">registered systems</option>
+        <option name="colorMode">block</option>
+        <option name="useColors">1</option>
+        <option name="rangeColors">["#6c757d","#6c757d"]</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>What needs attention</title>
+      <table>
+        <search>
+          <query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | lookup policy_playbook.csv framework_key requirement_key OUTPUT implementation_title implementation_steps owner_role common_gap | table framework_name requirement_key title category verification_label implementation_title owner_role common_gap | rename framework_name as Framework title as Requirement category as Category verification_label as "How to prove it" implementation_title as "How to implement" owner_role as "Suggested owner" common_gap as "Common gap"</query>
+        </search>
+        <option name="count">8</option>
+        <option name="wrap">true</option>
+        <option name="drilldown">row</option>
+        <drilldown><link target="_blank">/app/compliance_control_plane/check?requirement_token=$row.requirement_key$</link></drilldown>
+      </table>
+    </panel>
+  </row>
+</form>

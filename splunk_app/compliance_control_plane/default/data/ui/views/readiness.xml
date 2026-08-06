@@ -1,0 +1,127 @@
+<form version="1.1" theme="light" stylesheet="app.css">
+  <label>Control Readiness</label>
+  <description>Shared auditor and control-owner view for every selected framework.</description>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="framework_token" searchWhenChanged="true">
+      <label>Framework</label>
+      <choice value="*">All selected frameworks</choice>
+      <fieldForLabel>framework_name</fieldForLabel>
+      <fieldForValue>framework_key</fieldForValue>
+      <search><query>| inputlookup framework_catalog.csv | lookup ccp_framework_selections framework_key OUTPUT selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search status=active selected=1 | fields framework_key framework_name</query></search>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="system_token" searchWhenChanged="true">
+      <label>System</label>
+      <choice value="*">All active systems</choice>
+      <fieldForLabel>system_name</fieldForLabel>
+      <fieldForValue>system_key</fieldForValue>
+      <search><query>| inputlookup ccp_systems | search status=active | sort system_name | fields system_key system_name</query></search>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="scope_token" searchWhenChanged="true">
+      <label>Audit scope</label>
+      <choice value="*">All scopes</choice>
+      <fieldForLabel>scope_name</fieldForLabel>
+      <fieldForValue>scope_key</fieldForValue>
+      <search><query>| inputlookup ccp_scopes | search status=active | fields scope_key scope_name</query></search>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html><div class="ccp-page-header"><div class="ccp-eyebrow ccp-eyebrow-dark">CONTROL READINESS</div><h1>Selected framework posture</h1><p>Use this view to find what is ready for attestation, what needs evidence, and which checks require a document review or Splunk tracking result.</p></div></html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Evidence freshness</title>
+      <table>
+        <search><query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | join type=left framework_key requirement_key [| `ccp_evidence_rollup` | search scope_key="$scope_token$" OR "$scope_token$"="*" | stats sum(evidence_count) as evidence_count latest(expires_at) as expires_at latest(review_due_at) as review_due_at latest(reviewed_at) as reviewed_at latest(evidence_status) as evidence_status by framework_key requirement_key] | eval evidence_state=case(isnull(evidence_count) OR evidence_count=0,"No evidence",evidence_status="Expired","Expired",isnotnull(expires_at) AND strptime(expires_at,"%Y-%m-%dT%H:%M:%SZ")&lt;now(),"Expired",isnotnull(review_due_at) AND strptime(review_due_at,"%Y-%m-%dT%H:%M:%SZ")&lt;now(),"Review overdue",isnull(reviewed_at) OR reviewed_at="","Awaiting review",1=1,"Current") | stats count as Checks by evidence_state | rename evidence_state as "Evidence state" | sort "Evidence state"</query></search>
+        <option name="count">10</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Adapter coverage</title>
+      <table>
+        <search><query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | search verification_mode="technical" OR verification_mode="hybrid" | lookup measurement_adapters.csv measurement_key OUTPUT adapter_key display_name adapter_type source freshness_window status as adapter_status | eval adapter_state=if(isnull(adapter_key),"Adapter needed",adapter_status) | stats count as Checks by adapter_state | rename adapter_state as "Adapter state" | sort "Adapter state"</query></search>
+        <option name="count">10</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Checks in scope</title>
+      <single>
+        <search><query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | stats count as checks dc(framework_key) as frameworks | eval summary=checks." checks across ".frameworks." selected framework(s)" | table summary</query></search>
+        <option name="underLabel">document, technical, and hybrid routes are shown below</option><option name="drilldown">none</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Evidence coverage</title>
+      <single>
+        <search><query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | join type=left framework_key requirement_key [| `ccp_evidence_rollup` | search scope_key="$scope_token$" OR "$scope_token$"="*" | stats sum(evidence_count) as evidence_count by framework_key requirement_key] | eval evidence_count=coalesce(evidence_count,0) | stats count as checks sum(eval(if(evidence_count&gt;0,1,0))) as with_evidence | eval summary=with_evidence." of ".checks." checks have evidence on record" | table summary checks with_evidence</query></search>
+        <option name="underLabel">evidence on record is not the same as validated evidence</option><option name="drilldown">none</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Current pass rate</title>
+      <single>
+        <search><query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | join type=left framework_key requirement_key [| `ccp_latest_assessments` | search scope_key="$scope_token$" OR "$scope_token$"="*" | stats latest(status) as status by framework_key requirement_key] | eval result_status=if(isnull(status),"Not assessed",status) | stats count as checks by result_status | eventstats sum(checks) as total_checks | eval passed=if(result_status="Pass",checks,0) | stats sum(passed) as passed max(total_checks) as checks | eval percent=round((passed/checks)*100,1) | table percent passed checks</query></search>
+        <option name="unit">%</option><option name="underLabel">only the latest recorded decision is counted</option><option name="drilldown">none</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Not assessed</title>
+      <single>
+        <search><query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | join type=left framework_key requirement_key [| `ccp_latest_assessments` | search scope_key="$scope_token$" OR "$scope_token$"="*" | stats latest(status) as status by framework_key requirement_key] | eval result_status=if(isnull(status),"Not assessed",status) | search result_status="Not assessed" | stats count</query></search>
+        <option name="underLabel">cannot be attested until tested</option><option name="drilldown">none</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Open remediation</title>
+      <single>
+        <search><query>| inputlookup ccp_findings | search status="Open" OR status="In progress" OR status="Risk accepted" | search framework_key="$framework_token$" OR "$framework_token$"="*" | search scope_key="$scope_token$" OR "$scope_token$"="*" | stats count</query></search>
+        <option name="underLabel">findings still require an owner decision or retest</option><option name="drilldown">none</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Assessment status</title>
+      <table>
+        <search><query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | join type=left framework_key requirement_key [| `ccp_latest_assessments` | search scope_key="$scope_token$" OR "$scope_token$"="*" | stats latest(status) as status by framework_key requirement_key] | eval result_status=if(isnull(status),"Not assessed",status) | stats count by result_status | rename result_status as Status | sort Status</query></search>
+        <option name="wrap">true</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Review coverage</title>
+      <table>
+        <search><query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | join type=left framework_key requirement_key [| `ccp_latest_assessments` | search scope_key="$scope_token$" OR "$scope_token$"="*" | stats latest(reviewer) as reviewer latest(reviewed_at) as reviewed_at by framework_key requirement_key] | eval review_state=if(isnull(reviewed_at) OR reviewed_at="","Awaiting review","Reviewed") | stats count as Checks by review_state | rename review_state as "Review state" | sort "Review state"</query></search>
+        <option name="wrap">true</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Verification routes</title>
+      <table>
+        <search><query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | stats count by verification_label verification_mode | rename verification_label as "How to prove it" verification_mode as Route count as Checks</query></search>
+        <option name="wrap">true</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>What needs attention</title>
+      <table>
+        <search><query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | join type=left framework_key requirement_key [| `ccp_latest_assessments` | search scope_key="$scope_token$" OR "$scope_token$"="*" | stats latest(status) as status latest(score) as score latest(assessor) as assessor latest(assessed_at) as assessed_at latest(notes) as notes by framework_key requirement_key] | join type=left framework_key requirement_key [| `ccp_evidence_rollup` | search scope_key="$scope_token$" OR "$scope_token$"="*" | stats sum(evidence_count) as evidence_count latest(last_evidence) as last_evidence by framework_key requirement_key] | eval result_status=if(isnull(status),"Not assessed",status), evidence_count=coalesce(evidence_count,0) | search NOT result_status="Pass" OR evidence_count=0 | lookup policy_playbook.csv framework_key requirement_key OUTPUT implementation_title owner_role common_gap | table framework_key framework_name requirement_key title verification_label verification_guidance result_status evidence_count last_evidence implementation_title owner_role common_gap | rename framework_name as Framework requirement_key as "Check key" title as Requirement verification_label as "How to prove it" verification_guidance as "Verification guidance" result_status as Status evidence_count as Evidence last_evidence as "Last evidence" implementation_title as "Implementation" owner_role as "Suggested owner" common_gap as "Common gap"</query></search>
+        <option name="count">12</option><option name="wrap">true</option><option name="drilldown">row</option>
+        <drilldown><link target="_blank">/app/compliance_control_plane/check?framework_token=$row.framework_key$&amp;requirement_token=$row.requirement_key$&amp;system_token=$system_token$&amp;scope_token=$scope_token$</link></drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Auditor rule</title>
+      <html><div class="ccp-callout"><strong>Pass is a decision, not a data point.</strong> Mark a check Pass only when the implementation is operating, the validation method has been executed, the evidence is current, and exceptions are resolved or formally accepted.</div></html>
+    </panel>
+  </row>
+</form>

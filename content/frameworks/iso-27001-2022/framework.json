@@ -1,0 +1,16 @@
+{
+  "key": "iso-27001-2022",
+  "name": "ISO/IEC 27001",
+  "version": "2022",
+  "authority": "International Organization for Standardization",
+  "description": "Information security management system requirements with Annex A control themes for managing information security risk.",
+  "source_url": "https://www.iso.org/standard/27001.html",
+  "content_status": "foundational",
+  "default_selected": 0,
+  "requirements": [
+    {"key":"iso27001.a5","title":"Organizational Controls","description":"Governance, policies, roles, asset responsibilities, supplier relationships, incident management, and continuity controls.","type":"control","category":"Organizational Controls","source_reference":"ISO/IEC 27001:2022 Annex A: A.5","evidence_types":["is_policy","risk_register","supplier_review","incident_plan"],"verification_mode":"document","verification_guidance":"Review the ISMS scope, approved policies, assigned responsibilities, risk treatment, supplier decisions, and evidence the processes operate."},
+    {"key":"iso27001.a6","title":"People Controls","description":"Screening, terms, awareness, disciplinary, remote work, and event reporting controls for personnel.","type":"control","category":"People Controls","source_reference":"ISO/IEC 27001:2022 Annex A: A.6","evidence_types":["personnel_policy","training_records","screening_record","remote_work_standard"],"verification_mode":"document","verification_guidance":"Review approved personnel procedures and representative onboarding, training, remote work, and event reporting records."},
+    {"key":"iso27001.a7","title":"Physical Controls","description":"Physical entry, monitoring, environmental protection, equipment security, media, and clear desk controls.","type":"control","category":"Physical Controls","source_reference":"ISO/IEC 27001:2022 Annex A: A.7","evidence_types":["physical_security_policy","access_log","facility_test","media_disposal_record"],"verification_mode":"document","verification_guidance":"Review physical security policy, access and visitor records, facility tests, equipment protection, and media disposal evidence."},
+    {"key":"iso27001.a8","title":"Technological Controls","description":"Endpoint, access, authentication, vulnerability, configuration, logging, monitoring, backup, and secure development controls.","type":"control","category":"Technological Controls","source_reference":"ISO/IEC 27001:2022 Annex A: A.8","evidence_types":["configuration_scan","vulnerability_report","log_source_inventory","backup_test"],"verification_mode":"technical","verification_guidance":"Use Splunk tracking and technical evidence to show current coverage, exceptions, detection, vulnerability, backup, and change status."}
+  ]
+}

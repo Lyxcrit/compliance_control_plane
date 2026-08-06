@@ -1,0 +1,81 @@
+<form version="1.1" theme="light" stylesheet="app.css">
+  <label>Audit Package</label>
+  <description>Review a fixed, exportable assessment snapshot with scope, framework versions, evidence, and remediation.</description>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="framework_token" searchWhenChanged="true">
+      <label>Framework</label>
+      <choice value="*">All selected frameworks</choice>
+      <fieldForLabel>framework_name</fieldForLabel>
+      <fieldForValue>framework_key</fieldForValue>
+      <search><query>| inputlookup framework_catalog.csv | lookup ccp_framework_selections framework_key OUTPUT selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search status=active selected=1 | fields framework_key framework_name</query></search>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="scope_token" searchWhenChanged="true">
+      <label>Audit scope</label>
+      <choice value="*">All active scopes</choice>
+      <fieldForLabel>scope_name</fieldForLabel>
+      <fieldForValue>scope_key</fieldForValue>
+      <search><query>| inputlookup ccp_scopes | search status=active | sort scope_name | fields scope_key scope_name</query></search>
+      <default>*</default>
+    </input>
+    <input type="text" token="package_earliest" searchWhenChanged="false"><label>Assessment period start</label><default>-30d@d</default></input>
+    <input type="text" token="package_latest" searchWhenChanged="false"><label>Assessment period end</label><default>now</default></input>
+  </fieldset>
+  <row>
+    <panel>
+      <html><div class="ccp-page-header"><div class="ccp-eyebrow ccp-eyebrow-dark">AUDIT PACKAGE</div><h1>Fixed assessment snapshot</h1><p>Use the tables below as the package index. Export each table from Splunk after confirming the framework versions, scope, period, and evidence review status.</p></div></html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Package scope and framework versions</title>
+      <table><search><query>| inputlookup framework_catalog.csv | lookup ccp_framework_selections framework_key OUTPUT selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search status=active selected=1 | search framework_key="$framework_token$" OR "$framework_token$"="*" | table framework_name framework_key version authority content_digest source_url | rename framework_name as Framework framework_key as "Framework key" version as Version authority as Authority content_digest as "Content digest" source_url as "Source reference"</query></search><option name="count">20</option><option name="wrap">true</option><option name="drilldown">none</option></table>
+    </panel>
+    <panel>
+      <title>Assessment package rule</title>
+      <html><div class="ccp-callout"><strong>Scope:</strong> $scope_token$<br /><strong>Period:</strong> $package_earliest$ through $package_latest$<br /><strong>Interpretation:</strong> Not assessed, stale evidence, expired evidence, unresolved findings, and risk acceptance remain visible in the export.</div></html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Assessment basis</title>
+      <table><search><query>| inputlookup framework_assessment_profiles.csv | lookup framework_catalog.csv framework_key OUTPUT framework_name version | search framework_key="$framework_token$" OR "$framework_token$"="*" | table framework_name version assessment_granularity assessment_methods scoring_model required_artifacts audit_boundary | rename framework_name as Framework version as Version assessment_granularity as "Assessment level" assessment_methods as "Assessment methods" scoring_model as "Decision model" required_artifacts as "Artifacts expected" audit_boundary as "Audit boundary"</query></search><option name="count">10</option><option name="wrap">true</option><option name="drilldown">none</option></table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Package manifest</title>
+      <table>
+        <search>
+          <query>| makeresults | eval package_id="ccp-" . strftime(now(),"%Y%m%dT%H%M%SZ"), generated_at=strftime(now(),"%Y-%m-%dT%H:%M:%SZ"), framework_filter="$framework_token$", scope_filter="$scope_token$", period_start="$package_earliest$", period_end="$package_latest$" | appendcols [| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | stats count as requirement_count] | appendcols [| inputlookup ccp_assessments | search framework_key="$framework_token$" OR "$framework_token$"="*" | search scope_key="$scope_token$" OR "$scope_token$"="*" | stats count as assessment_count] | appendcols [| inputlookup ccp_evidence | search framework_key="$framework_token$" OR "$framework_token$"="*" | search scope_key="$scope_token$" OR "$scope_token$"="*" | stats count as evidence_count] | appendcols [| inputlookup ccp_findings | search framework_key="$framework_token$" OR "$framework_token$"="*" | search scope_key="$scope_token$" OR "$scope_token$"="*" | stats count as finding_count] | eval requirement_count=coalesce(requirement_count,0), assessment_count=coalesce(assessment_count,0), evidence_count=coalesce(evidence_count,0), finding_count=coalesce(finding_count,0), export_status="Ready for table export" | table package_id generated_at framework_filter scope_filter period_start period_end requirement_count assessment_count evidence_count finding_count export_status | rename package_id as "Package ID" generated_at as "Generated at" framework_filter as Framework scope_filter as Scope period_start as "Period start" period_end as "Period end" requirement_count as Requirements assessment_count as Assessments evidence_count as Evidence finding_count as Findings export_status as Status</query>
+        </search>
+        <option name="wrap">true</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+    <panel>
+      <html><div class="ccp-callout"><strong>Export contract:</strong> export this manifest together with the framework register, requirement assessment register, measurement register, evidence register, and remediation register. The package ID, framework content digests, scope, and period must remain together.</div></html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Requirement assessment register</title>
+      <table><search><query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | lookup ccp_framework_catalog framework_key OUTPUT version content_digest | join type=left framework_key requirement_key [| inputlookup ccp_assessments | eval assessed_epoch=strptime(assessed_at,"%Y-%m-%dT%H:%M:%SZ"), period_start=relative_time(now(),"$package_earliest$"), period_end=if("$package_latest$"="now",now(),relative_time(now(),"$package_latest$")) | where assessed_epoch&gt;=period_start AND assessed_epoch&lt;=period_end | where "$scope_token$"="*" OR scope_key="$scope_token$" | sort 0 - assessed_at | dedup framework_key requirement_key scope_key system_key | stats latest(scope_key) as assessment_scope latest(status) as status latest(score) as score latest(assessor) as assessor latest(assessed_at) as assessed_at latest(reviewer) as reviewer latest(reviewed_at) as reviewed_at latest(valid_until) as valid_until latest(exception_reference) as exception_reference by framework_key requirement_key] | join type=left framework_key requirement_key [| inputlookup ccp_evidence | eval collected_epoch=strptime(collected_at,"%Y-%m-%dT%H:%M:%SZ"), period_start=relative_time(now(),"$package_earliest$"), period_end=if("$package_latest$"="now",now(),relative_time(now(),"$package_latest$")) | where collected_epoch&gt;=period_start AND collected_epoch&lt;=period_end | where "$scope_token$"="*" OR scope_key="$scope_token$" | stats count as evidence_count latest(status) as evidence_status latest(collected_at) as collected_at latest(expires_at) as expires_at latest(review_due_at) as review_due_at by framework_key requirement_key] | eval result_status=if(isnull(status),"Not assessed",status), evidence_count=coalesce(evidence_count,0) | table framework_name framework_key version content_digest requirement_key title canonical_control_name mapping_status result_status assessment_scope score assessor assessed_at reviewer reviewed_at valid_until exception_reference evidence_count evidence_status collected_at expires_at review_due_at | rename framework_name as Framework framework_key as "Framework key" version as Version content_digest as "Content digest" requirement_key as "Check key" title as Requirement canonical_control_name as "Canonical control" mapping_status as "Mapping status" result_status as Status assessment_scope as Scope score as Score assessor as Assessor assessed_at as "Assessed at" reviewer as Reviewer reviewed_at as "Reviewed at" valid_until as "Valid until" exception_reference as Exception evidence_count as Evidence evidence_status as "Evidence status" collected_at as "Collected at" expires_at as "Evidence expires" review_due_at as "Evidence review due"</query><earliest>$package_earliest$</earliest><latest>$package_latest$</latest></search><option name="count">25</option><option name="wrap">true</option><option name="drilldown">none</option></table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Measurement result register</title>
+      <table><search><query>| `ccp_measurement_rollup` | eval period_start=relative_time(now(),"$package_earliest$"), period_end=if("$package_latest$"="now",now(),relative_time(now(),"$package_latest$")), measured_epoch=strptime(measured_at,"%Y-%m-%dT%H:%M:%SZ") | where measured_epoch&gt;=period_start AND measured_epoch&lt;=period_end | search framework_key="$framework_token$" OR "$framework_token$"="*" | search scope_key="$scope_token$" OR "$scope_token$"="*" | table result_key scope_key framework_key framework_version requirement_key measurement_key adapter_key status observed_value expected_value measured_at source evidence_key limitations measurement_origin | rename result_key as "Result key" scope_key as Scope framework_key as Framework framework_version as Version requirement_key as "Check key" measurement_key as Measurement adapter_key as Adapter status as Status observed_value as Observed expected_value as Expected measured_at as "Measured at" source as Source evidence_key as Evidence limitations as Limitations measurement_origin as Origin</query><earliest>$package_earliest$</earliest><latest>$package_latest$</latest></search><option name="count">25</option><option name="wrap">true</option><option name="drilldown">none</option></table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Evidence register</title>
+      <table><search><query>| inputlookup ccp_evidence | eval period_start=relative_time(now(),"$package_earliest$"), period_end=if("$package_latest$"="now",now(),relative_time(now(),"$package_latest$")), collected_epoch=strptime(collected_at,"%Y-%m-%dT%H:%M:%SZ") | where collected_epoch&gt;=period_start AND collected_epoch&lt;=period_end | search framework_key="$framework_token$" OR "$framework_token$"="*" | search scope_key="$scope_token$" OR "$scope_token$"="*" | table system_key scope_key framework_key framework_version requirement_key evidence_type title owner collected_by source_type status collected_at review_due_at expires_at reviewed_by reviewed_at acceptance_notes location | rename system_key as System scope_key as Scope framework_key as Framework framework_version as Version requirement_key as "Check key" evidence_type as Type title as Evidence owner as Owner collected_by as Collector source_type as Source status as Status collected_at as "Collected at" review_due_at as "Review due" expires_at as Expires reviewed_by as Reviewer reviewed_at as "Reviewed at" acceptance_notes as "Acceptance notes" location as Reference</query><earliest>$package_earliest$</earliest><latest>$package_latest$</latest></search><option name="count">25</option><option name="wrap">true</option><option name="drilldown">none</option></table>
+    </panel>
+    <panel>
+      <title>Remediation register</title>
+      <table><search><query>| inputlookup ccp_findings | eval period_start=relative_time(now(),"$package_earliest$"), period_end=if("$package_latest$"="now",now(),relative_time(now(),"$package_latest$")), updated_epoch=strptime(updated_at,"%Y-%m-%dT%H:%M:%SZ") | where updated_epoch&gt;=period_start AND updated_epoch&lt;=period_end | search framework_key="$framework_token$" OR "$framework_token$"="*" | search scope_key="$scope_token$" OR "$scope_token$"="*" | table finding_key scope_key framework_key framework_version requirement_key title severity status owner due_at remediation exception_reference retest_at closed_at | rename finding_key as "Finding key" scope_key as Scope framework_key as Framework framework_version as Version requirement_key as "Check key" title as Finding severity as Severity status as Status owner as Owner due_at as Due remediation as Remediation exception_reference as Exception retest_at as Retest closed_at as Closed</query><earliest>$package_earliest$</earliest><latest>$package_latest$</latest></search><option name="count">25</option><option name="wrap">true</option><option name="drilldown">none</option></table>
+    </panel>
+  </row>
+</form>

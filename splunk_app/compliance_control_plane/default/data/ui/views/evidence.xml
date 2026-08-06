@@ -1,0 +1,56 @@
+<dashboard version="1.1" theme="light" script="evidence.js" stylesheet="app.css">
+  <label>Evidence Intake</label>
+  <description>Record evidence with an owner, source, status, and review date.</description>
+  <search id="CCPEvidenceFrameworks"><query>| inputlookup framework_catalog.csv | lookup ccp_framework_selections framework_key OUTPUT selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search status=active selected=1 | table framework_key framework_name version content_digest</query></search>
+  <search id="CCPEvidenceRequirements"><query>| inputlookup requirements.csv | lookup ccp_framework_selections framework_key OUTPUT selected | lookup ccp_framework_catalog framework_key OUTPUT default_selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search selected=1 | table framework_key requirement_key title</query></search>
+  <search id="CCPEvidenceScopes"><query>| inputlookup ccp_scopes | search status=active | table scope_key scope_name</query></search>
+  <search id="CCPEvidenceSystems"><query>| inputlookup ccp_systems | search status=active | table system_key system_name scope_key</query></search>
+  <row>
+    <panel>
+      <html>
+        <div class="ccp-section-heading">
+          <div class="ccp-eyebrow ccp-eyebrow-dark">EVIDENCE WORKFLOW</div>
+          <h2>Record evidence</h2>
+          <p>Evidence should identify what was checked, where it came from, who owns it, and when it must be reviewed again.</p>
+        </div>
+        <div class="ccp-callout ccp-callout-info"><strong>Before recording evidence:</strong> configure an active framework, audit scope, and system in <a href="/app/compliance_control_plane/setup">Framework Setup</a>. Select the framework and check first, then describe the artifact or Splunk result an auditor can review.</div>
+        <div class="ccp-form-grid">
+          <label>System <span class="ccp-help" title="The system or service the evidence supports.">i</span><select id="ccp-system-key"><option value="">Loading systems...</option></select></label>
+          <label>Audit scope <span class="ccp-help" title="The approved boundary the evidence supports.">i</span><select id="ccp-scope-key"><option value="">Loading scopes...</option></select></label>
+          <label>Framework <span class="ccp-help" title="The active framework containing the check.">i</span><select id="ccp-framework-key"><option value="">Loading frameworks...</option></select></label>
+          <label>Framework version<input id="ccp-framework-version" type="text" readonly="readonly" placeholder="Select a framework" /></label>
+          <label>Content digest<input id="ccp-content-digest" type="text" readonly="readonly" placeholder="Select a framework" /></label>
+          <label>Check <span class="ccp-help" title="Choose the requirement this evidence supports.">i</span><select id="ccp-requirement-key"><option value="">Select a framework first</option></select></label>
+          <label>Evidence type<input id="ccp-evidence-type" type="text" placeholder="searchability_check" /></label>
+          <label>Evidence title<input id="ccp-evidence-title" type="text" placeholder="Daily source coverage result" /></label>
+          <label>Location or reference<input id="ccp-evidence-location" type="text" placeholder="index=summary sourcetype=coverage" /></label>
+          <label>Document URL or Splunk reference<input id="ccp-document-url" type="text" placeholder="https://... or index=... / saved search" /></label>
+          <label>Document version<input id="ccp-document-version" type="text" placeholder="policy-2026.08" /></label>
+          <label>Artifact SHA-256<input id="ccp-artifact-hash" type="text" placeholder="Optional integrity hash" /></label>
+          <label>Owner<input id="ccp-evidence-owner" type="text" placeholder="security-operations" /></label>
+          <label>Collected by<input id="ccp-collected-by" type="text" placeholder="j.smith" /></label>
+          <label>Source type<input id="ccp-source-type" type="text" placeholder="Splunk search, policy, ticket, or export" /></label>
+          <label>Status<select id="ccp-evidence-status"><option>Current</option><option>Needs review</option><option>Expired</option><option>Accepted exception</option></select></label>
+          <label>Collected at<input id="ccp-collected-at" type="text" placeholder="2026-08-03T14:00:00Z" /></label>
+          <label>Review due at<input id="ccp-review-due-at" type="text" placeholder="2026-11-03T14:00:00Z" /></label>
+          <label>Expires at<input id="ccp-expires-at" type="text" placeholder="2026-11-03T14:00:00Z" /></label>
+          <label>Reviewed by<input id="ccp-reviewed-by" type="text" placeholder="security-manager" /></label>
+          <label>Reviewed at<input id="ccp-reviewed-at" type="text" placeholder="2026-08-04T16:00:00Z" /></label>
+          <label class="ccp-field-wide">Acceptance notes<textarea id="ccp-acceptance-notes" rows="3" placeholder="Why this evidence is accepted, including any limitation or exception."></textarea></label>
+        </div>
+        <div class="ccp-form-actions"><button id="ccp-save-evidence" class="btn btn-primary" type="button">Save evidence</button><span id="ccp-evidence-message" role="status"></span></div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Recent evidence</title>
+      <table>
+        <search><query>| inputlookup ccp_evidence | sort 0 - collected_at | table system_key scope_key framework_key framework_version requirement_key evidence_type title owner collected_by source_type document_url document_version artifact_hash status collected_at review_due_at expires_at reviewed_by reviewed_at acceptance_notes</query></search>
+        <option name="count">10</option>
+        <option name="wrap">true</option>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>

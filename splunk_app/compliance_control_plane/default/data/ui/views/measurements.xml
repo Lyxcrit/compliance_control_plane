@@ -1,0 +1,155 @@
+<form version="1.1" theme="light" script="measurement.js" stylesheet="app.css">
+  <label>Measurement Center</label>
+  <description>Operational measurements for checks that can be evaluated from Splunk configuration, data models, or event activity.</description>
+  <search id="CCPMeasurementScopes"><query>| inputlookup ccp_scopes | search status=active | sort scope_name | table scope_key scope_name</query></search>
+  <search id="CCPMeasurementRequirements"><query>| inputlookup requirements.csv | search framework_key="omb-m-26-14" | sort requirement_key | table requirement_key title</query></search>
+  <search id="CCPMeasurementDefinitions"><query>| inputlookup measurement_adapters.csv | search status="ready" | dedup measurement_key | sort display_name | table measurement_key display_name</query></search>
+  <search id="CCPMeasurementAdapters"><query>| inputlookup measurement_adapters.csv | search status="ready" | sort display_name | table adapter_key display_name</query></search>
+  <search id="CCPTechnicalChecks"><query>| inputlookup technical_checks.csv | sort display_name | table check_key display_name measurement_key adapter_key evidence_type search expected_value limitations</query></search>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="maturity_token" searchWhenChanged="true">
+      <label>M-26-14 retrieval target</label>
+      <choice value="1">Level 1: 6 months retrievable</choice>
+      <choice value="2">Level 2: 12 months retrievable</choice>
+      <choice value="3">Level 3: 12 months retrievable</choice>
+      <choice value="4">Level 4: 12 months retrievable</choice>
+      <default>1</default>
+    </input>
+  </fieldset>
+  <search id="CCPM26Selection">
+    <query>| inputlookup framework_catalog.csv | lookup ccp_framework_selections framework_key OUTPUT selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search framework_key="omb-m-26-14" selected=1 | head 1</query>
+    <done><condition match="'job.resultCount' &gt; 0"><set token="m26_selected">true</set></condition></done>
+  </search>
+  <row rejects="$m26_selected$">
+    <panel>
+      <html><div class="ccp-callout ccp-callout-warning"><strong>M-26-14 is not selected.</strong> Select OMB M-26-14 in Framework Setup to make these measurements part of the active compliance scope.</div></html>
+    </panel>
+  </row>
+  <row depends="$m26_selected$">
+    <panel>
+      <html>
+        <div class="ccp-section-heading"><div class="ccp-eyebrow ccp-eyebrow-dark">MEASUREMENT EVIDENCE</div><h2>Record a normalized result</h2><p>Save the observed result from a technical adapter with its scope, expected value, source, limitations, and optional evidence reference.</p></div>
+        <div class="ccp-form-grid">
+          <label>Result key<input id="ccp-measurement-key" type="text" placeholder="measurement-2026-0001" /></label>
+          <label>Audit scope<select id="ccp-measurement-scope"><option value="">Loading active scopes...</option></select></label>
+          <label>Framework key<input id="ccp-measurement-framework" type="text" value="omb-m-26-14" /></label>
+          <label>Framework version<input id="ccp-measurement-version" type="text" placeholder="2026-05-22" /></label>
+          <label>Check<select id="ccp-measurement-requirement"><option value="">Loading M-26-14 checks...</option></select></label>
+          <label>Run automated check<select id="ccp-measurement-check"><option value="">Loading executable checks...</option></select></label>
+          <label>Measurement<select id="ccp-measurement-name"><option value="">Loading measurements...</option></select></label>
+          <label>Adapter<select id="ccp-measurement-adapter"><option value="">Loading adapters...</option></select></label>
+          <label>Status<select id="ccp-measurement-status"><option>Pass</option><option>Partial</option><option>Fail</option><option>Not assessed</option><option>Not applicable</option></select></label>
+          <label>Observed value<input id="ccp-measurement-observed" type="text" placeholder="42 indexes, 38 meeting target" /></label>
+          <label>Expected value<input id="ccp-measurement-expected" type="text" placeholder="All in-scope indexes meet target" /></label>
+          <label>Measured at<input id="ccp-measurement-at" type="text" placeholder="2026-08-04T14:00:00Z" /></label>
+          <label>Source<input id="ccp-measurement-source" type="text" placeholder="Measurement Center: Index retention configuration" /></label>
+          <label>Evidence key<input id="ccp-measurement-evidence" type="text" placeholder="evidence-2026-0001" /></label>
+          <label class="ccp-field-wide">Limitations<textarea id="ccp-measurement-limitations" rows="3" placeholder="What this result does not prove, including scope or freshness limitations."></textarea></label>
+        </div>
+        <div class="ccp-form-actions"><button id="ccp-run-check" class="btn" type="button">Run check</button><button id="ccp-save-measurement" class="btn btn-primary" type="button">Save measurement result</button><span id="ccp-measurement-message" role="status"></span></div>
+        <div id="ccp-check-result" class="ccp-callout ccp-callout-info">Run a check to calculate a result from current Splunk data. A result is evidence for the assessment, not the assessment decision itself.</div>
+      </html>
+    </panel>
+  </row>
+  <row depends="$m26_selected$">
+    <panel>
+      <title>Recorded measurement results</title>
+      <table><search><query>| inputlookup ccp_measurements | sort 0 - measured_at | table result_key scope_key framework_key framework_version requirement_key measurement_key adapter_key status observed_value expected_value measured_at source evidence_key limitations | rename result_key as "Result key" scope_key as Scope framework_key as Framework framework_version as Version requirement_key as "Check key" measurement_key as Measurement adapter_key as Adapter status as Status observed_value as Observed expected_value as Expected measured_at as "Measured at" source as Source evidence_key as Evidence limitations as Limitations</query></search><option name="count">15</option><option name="wrap">true</option><option name="drilldown">none</option></table>
+    </panel>
+  </row>
+  <row depends="$m26_selected$">
+    <panel>
+      <title>Scheduled measurement cache</title>
+      <table>
+        <search>
+          <query>| inputlookup ccp_measurement_cache | sort 0 - measured_at | table check_key scope_key status observed_value expected_value measured_at source limitations | rename check_key as "Check" scope_key as Scope status as Status observed_value as Observed expected_value as Expected measured_at as "Measured at" source as Source limitations as Limitations</query>
+        </search>
+        <option name="count">10</option><option name="wrap">true</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+    <panel>
+      <html><div class="ccp-callout ccp-callout-info"><strong>Scheduled collection:</strong> the cache refresh is installed disabled. An administrator can enable <code>CCP - Refresh technical measurement cache</code> after reviewing the global scope, permissions, and 15-minute schedule.</div></html>
+    </panel>
+  </row>
+  <row depends="$m26_selected$">
+    <panel>
+      <html>
+        <div class="ccp-page-header"><div class="ccp-eyebrow ccp-eyebrow-dark">MEASUREMENT CENTER</div><h1>M-26-14 operational measurements</h1><p>These panels inspect Splunk configuration and available telemetry. A result of Not measured means the required data source or baseline has not been configured; it is never treated as Pass.</p></div>
+      </html>
+    </panel>
+  </row>
+  <row depends="$m26_selected$">
+    <panel>
+      <title>Exposure Analytics source freshness</title>
+      <table>
+        <search>
+          <query>index=ea_discovery earliest=-24h latest=now | stats count as events latest(_time) as latest_event by source | rex field=source mode=sed "s/ea_srch_ip_asset_process/ip/" | rex field=source mode=sed "s/ea_srch_network_asset_process/host/" | rex field=source mode=sed "s/ea_srch_mac_asset_process/mac/" | rex field=source mode=sed "s/ea_srch_user_asset_process/users/" | rex field=source mode=sed "s/ea_seen_combo_nt_host_user_id/users/" | stats sum(events) as events max(latest_event) as latest_event by source | eval measured=if(events&gt;0,1,0), age_minutes=round((now()-latest_event)/60,1) | table source measured events age_minutes | rename source as Source measured as "Data available (1=yes)" events as Events age_minutes as "Minutes since latest event"</query>
+          <earliest>-24h</earliest><latest>now</latest>
+        </search>
+        <option name="count">10</option><option name="wrap">true</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Exposure Analytics data interpretation</title>
+      <html><div class="ccp-callout"><strong>What this proves:</strong> the discovery pipeline is producing recent records. It does not by itself prove that all in-scope assets are represented; record the approved system boundary and compare it with the observed inventory.</div></html>
+    </panel>
+  </row>
+  <row depends="$m26_selected$">
+    <panel>
+      <title>Index retention configuration</title>
+      <table>
+        <search>
+          <query>| rest /services/data/indexes splunk_server=local | search disabled=0 NOT title="_*" | eval retention_days=round(frozenTimePeriodInSecs/86400,1), target_days=case("$maturity_token$"="1",180,"$maturity_token$"="2",365,"$maturity_token$"="3",365,"$maturity_token$"="4",365,1=1,180) | eval status=case(retention_days&gt;=target_days,"Meets retrieval target",retention_days&lt;target_days,"Below retrieval target",1=1,"Not measured") | table title retention_days target_days status homePath coldPath | rename title as Index retention_days as "Configured retention (days)" target_days as "Target (days)" homePath as "Hot path" coldPath as "Cold path"</query>
+        </search>
+        <option name="count">15</option><option name="wrap">true</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row depends="$m26_selected$">
+    <panel>
+      <title>Retention measurement summary</title>
+      <single>
+        <search>
+          <query>| rest /services/data/indexes splunk_server=local | search disabled=0 NOT title="_*" | eval retention_days=round(frozenTimePeriodInSecs/86400,1), target_days=case("$maturity_token$"="1",180,"$maturity_token$"="2",365,"$maturity_token$"="3",365,"$maturity_token$"="4",365,1=1,180) | eval status=if(retention_days&gt;=target_days,"Meets target","Below target") | stats count as indexes, count(eval(status="Meets target")) as meeting_target, count(eval(status="Below target")) as below_target | eval summary=meeting_target." of ".indexes." indexes meet the configured retrieval target" | table summary below_target</query>
+        </search>
+        <option name="underLabel">configuration check only; searchability requires a separate test</option><option name="drilldown">none</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Recent indexed activity</title>
+      <single>
+        <search>
+          <query>| tstats summariesonly=false count where index=* earliest=-24h latest=now by index | stats dc(index) as indexes_with_events sum(count) as events | eval summary=indexes_with_events." indexes received events in the last 24 hours" | table summary events</query>
+        </search>
+        <option name="underLabel">activity is not the same as coverage</option><option name="drilldown">none</option>
+      </single>
+    </panel>
+  </row>
+  <row depends="$m26_selected$">
+    <panel>
+      <title>Inventory visibility: Splunk host metadata</title>
+      <table>
+        <search>
+          <query>| makeresults | eval source="Splunk host metadata", asset_count=0, measured=0 | append [| metadata type=hosts index=* | eval source="Splunk host metadata", measured=if(totalCount&gt;0,1,0) | stats dc(host) as asset_count, max(measured) as measured by source] | stats max(asset_count) as asset_count, max(measured) as measured by source | table source measured asset_count | rename source as Source measured as "Data available (1=yes)" asset_count as "Assets observed"</query>
+        </search>
+        <option name="wrap">true</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Inventory visibility: Exposure Analytics</title>
+      <table>
+        <search>
+          <query>index=ea_discovery earliest=-24h latest=now | stats count as events dc(ip_key) as ip_assets dc(nt_host) as host_assets dc(mac) as mac_assets dc(user_key) as user_assets by source | rex field=source mode=sed "s/ea_srch_ip_asset_process/ip/" | rex field=source mode=sed "s/ea_srch_network_asset_process/host/" | rex field=source mode=sed "s/ea_srch_mac_asset_process/mac/" | rex field=source mode=sed "s/ea_srch_user_asset_process/users/" | rex field=source mode=sed "s/ea_seen_combo_nt_host_user_id/users/" | stats sum(events) as events sum(ip_assets) as ip_assets sum(host_assets) as host_assets sum(mac_assets) as mac_assets sum(user_assets) as user_assets by source | eval measured=if(events&gt;0,1,0) | table source measured events ip_assets host_assets mac_assets user_assets | rename source as Source measured as "Data available (1=yes)" events as Events ip_assets as "IP assets" host_assets as "Host assets" mac_assets as "MAC assets" user_assets as "User assets"</query>
+          <earliest>-24h</earliest><latest>now</latest>
+        </search>
+        <option name="wrap">true</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row depends="$m26_selected$">
+    <panel>
+      <title>Measurement interpretation</title>
+      <html><div class="ccp-callout"><strong>Audit rule:</strong> configuration and telemetry panels provide supporting evidence. They do not define the system boundary, prove ownership, or replace an assessment. Open the related check, attach the result, and record Pass only after scope, evidence freshness, exceptions, and validation are confirmed.</div></html>
+    </panel>
+  </row>
+</form>

@@ -1,0 +1,74 @@
+<form version="1.1" theme="light" script="check.js" stylesheet="app.css">
+  <label>Check Detail</label>
+  <description>Per-check documentation, implementation guidance, validation, and current status.</description>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="framework_token" searchWhenChanged="true">
+      <label>Framework</label>
+      <fieldForLabel>framework_name</fieldForLabel>
+      <fieldForValue>framework_key</fieldForValue>
+      <search><query>| inputlookup framework_catalog.csv | lookup ccp_framework_selections framework_key OUTPUT selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search status=active selected=1 | fields framework_key framework_name</query></search>
+      <choice value="">Select a framework</choice>
+      <default></default>
+      <change>
+        <condition match="'value' == &quot;omb-m-26-14&quot;"><unset token="form.requirement_token"></unset><unset token="requirement_token"></unset><set token="m26_maturity">true</set></condition>
+        <condition match="'value' != &quot;omb-m-26-14&quot;"><unset token="form.requirement_token"></unset><unset token="requirement_token"></unset><unset token="m26_maturity"></unset></condition>
+      </change>
+    </input>
+    <input type="dropdown" token="requirement_token" searchWhenChanged="true">
+      <label>Check</label>
+      <fieldForLabel>title</fieldForLabel>
+      <fieldForValue>requirement_key</fieldForValue>
+      <search><query>| inputlookup requirements.csv | search framework_key="$framework_token$" | fields requirement_key title</query></search>
+      <choice value="">Select a framework first</choice>
+      <default></default>
+      <change><set token="requirement_token">$value$</set></change>
+    </input>
+    <input type="text" token="system_token" searchWhenChanged="true"><label>System key</label><default>*</default></input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Check definition</title>
+      <table>
+        <search><query>| inputlookup requirements.csv | search framework_key="$framework_token$" requirement_key="$requirement_token$" | lookup policy_playbook.csv framework_key requirement_key OUTPUT implementation_title implementation_steps validation_method owner_role common_gap | lookup framework_assessment_profiles.csv framework_key OUTPUT assessment_granularity assessment_methods scoring_model required_artifacts audit_boundary authority_statement | table title category requirement_type verification_label verification_guidance description source_reference evidence_types implementation_title implementation_steps validation_method owner_role common_gap assessment_granularity assessment_methods scoring_model required_artifacts audit_boundary authority_statement assessment_method_reference assessment_objective applicability pass_criteria partial_criteria fail_criteria | rename title as Check category as Category requirement_type as Type verification_label as "How to prove it" verification_guidance as "Verification guidance" description as "What is being checked" source_reference as "Source reference" evidence_types as "Evidence expected" implementation_title as "Implementation" implementation_steps as "Steps to implement" validation_method as "How to validate" owner_role as "Suggested owner" common_gap as "Common gap" assessment_granularity as "Assessment level" assessment_methods as "Assessment methods" scoring_model as "Decision model" required_artifacts as "Artifacts expected" audit_boundary as "Audit boundary" authority_statement as "Content status" assessment_method_reference as "Method reference" assessment_objective as "Assessment objective" applicability as Applicability pass_criteria as "Pass criteria" partial_criteria as "Partial criteria" fail_criteria as "Fail criteria" | transpose | rename column AS " ", "row *" AS " *"</query></search>
+        <option name="count">30</option>
+        <option name="wrap">true</option>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row depends="$m26_maturity$">
+    <panel>
+      <title>M-26-14 maturity targets</title>
+      <table>
+        <search><query>| inputlookup requirements.csv | search framework_key="$framework_token$" requirement_key="$requirement_token$" | table level_1 level_2 level_3 level_4 | rename level_1 as "Level 1" level_2 as "Level 2" level_3 as "Level 3" level_4 as "Level 4" | transpose | rename column AS " ", "row *" AS " *"</query></search>
+        <option name="count">30</option><option name="wrap">true</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Current assessment</title>
+      <table>
+        <search><query>| inputlookup ccp_assessments | search framework_key="$framework_token$" requirement_key="$requirement_token$" | where "$system_token$"="*" OR system_key="$system_token$" | sort 0 - assessed_at | head 1 | table system_key status score assessor assessed_at notes | rename system_key as System status as Status score as Score assessor as Assessor assessed_at as "Assessed at" notes as Notes</query></search>
+        <option name="wrap">true</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Evidence on record</title>
+      <table>
+        <search><query>| inputlookup ccp_evidence | search framework_key="$framework_token$" requirement_key="$requirement_token$" | where "$system_token$"="*" OR system_key="$system_token$" | sort 0 - collected_at | table system_key evidence_type title owner status collected_at expires_at location | rename system_key as System evidence_type as Type title as Evidence owner as Owner status as Status collected_at as Collected expires_at as Expires location as Reference</query></search>
+        <option name="count">8</option><option name="wrap">true</option><option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html><div class="ccp-form-actions"><a class="btn btn-primary" href="/app/compliance_control_plane/assessment?framework_token=$framework_token$&amp;requirement_token=$requirement_token$&amp;system_token=$system_token$&amp;scope_token=$scope_token$">Record assessment</a><a class="btn btn-secondary" href="/app/compliance_control_plane/evidence?framework_token=$framework_token$&amp;requirement_token=$requirement_token$&amp;system_token=$system_token$&amp;scope_token=$scope_token$">Record evidence</a></div></html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html><div class="ccp-callout"><strong>Audit rule:</strong> select Pass only when the implementation is in place, the validation method has been executed, and current evidence is attached. A policy document alone is not sufficient.</div></html>
+    </panel>
+  </row>
+</form>

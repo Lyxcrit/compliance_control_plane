@@ -1,0 +1,11 @@
+measurement_key,display_name,unit,description
+asset_inventory_coverage,Asset inventory coverage,percent,"Assets represented in the governed inventory divided by in-scope assets."
+log_collection_coverage,Log collection coverage,percent,"In-scope assets with required searchable and retrievable logs divided by inventoried assets."
+baseline_alert_coverage,Baseline alert coverage,percent,"Minimum baseline objectives with tested actionable detections divided by baseline objectives."
+log_retention,Log retention,months,"Separate searchable retention from retrievable retention."
+log_management_maturity,Log management maturity,level,"Highest level supported by configuration and operational evidence."
+minimum_baseline_coverage,Minimum baseline coverage,percent,"Baseline logging objectives with source, analytic, and alert evidence."
+index_retention_configuration,Index retention configuration,days,"Configured index retention compared with the selected M-26-14 retrieval target."
+recent_index_activity,Recent index activity,count,"Indexes with events in the selected recent window; activity does not prove coverage."
+cim_endpoint_inventory,CIM Endpoint inventory,count,"Distinct endpoint destinations returned by the CIM Endpoint data model."
+exposure_analytics_inventory,Exposure Analytics inventory,count,"Distinct assets returned by the Exposure Analytics asset process data model."

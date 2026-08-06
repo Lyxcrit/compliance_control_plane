@@ -1,0 +1,46 @@
+<dashboard version="1.1" theme="light" script="assessment.js" stylesheet="app.css">
+  <label>Assessment Entry</label>
+  <description>Record an auditable pass, partial, fail, or not-applicable decision for a check.</description>
+  <search id="CCPAssessmentFrameworks"><query>| inputlookup framework_catalog.csv | lookup ccp_framework_selections framework_key OUTPUT selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search status=active selected=1 | table framework_key framework_name version content_digest</query></search>
+  <search id="CCPAssessmentRequirements"><query>| inputlookup requirements.csv | lookup ccp_framework_selections framework_key OUTPUT selected | lookup ccp_framework_catalog framework_key OUTPUT default_selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search selected=1 | table framework_key requirement_key title verification_mode measurement_key</query></search>
+  <search id="CCPAssessmentScopes"><query>| inputlookup ccp_scopes | search status=active | table scope_key scope_name</query></search>
+  <search id="CCPAssessmentSystems"><query>| inputlookup ccp_systems | search status=active | table system_key system_name scope_key</query></search>
+  <search id="CCPAssessmentEvidence"><query>| inputlookup ccp_evidence_current | search status="Current" | table system_key scope_key framework_key requirement_key document_url location reviewed_at</query></search>
+  <search id="CCPAssessmentMeasurements"><query>| inputlookup ccp_measurements | sort 0 - measured_at | dedup scope_key framework_key requirement_key | table scope_key framework_key requirement_key status measured_at</query></search>
+  <row>
+    <panel>
+      <html>
+        <div class="ccp-section-heading">
+          <div class="ccp-eyebrow ccp-eyebrow-dark">ASSESSMENT WORKFLOW</div>
+          <h2>Record a check result</h2>
+          <p>Assess the implementation and its evidence together. Use Partial when remediation is required and Not applicable only with documented justification.</p>
+        </div>
+        <div class="ccp-callout ccp-callout-info"><strong>Before recording a result:</strong> configure at least one active framework, audit scope, and system in <a href="/app/compliance_control_plane/setup">Framework Setup</a>. Then choose the framework and check. The framework version and check list are filled from the active catalog.</div>
+        <div class="ccp-form-grid">
+          <label>System <span class="ccp-help" title="The system or service this assessment applies to.">i</span><select id="ccp-assessment-system"><option value="">Loading systems...</option></select></label>
+          <label>Audit scope <span class="ccp-help" title="The approved boundary the assessment supports.">i</span><select id="ccp-assessment-scope"><option value="">Loading scopes...</option></select></label>
+          <label>Framework <span class="ccp-help" title="The active framework containing the check.">i</span><select id="ccp-assessment-framework"><option value="">Loading frameworks...</option></select></label>
+          <label>Framework version<input id="ccp-assessment-framework-version" type="text" readonly="readonly" placeholder="Select a framework" /></label>
+          <label>Content digest<input id="ccp-assessment-content-digest" type="text" readonly="readonly" placeholder="Select a framework" /></label>
+          <label>Check <span class="ccp-help" title="Choose the requirement you tested. Changing framework refreshes this list.">i</span><select id="ccp-assessment-requirement"><option value="">Select a framework first</option></select></label>
+          <label>Status<select id="ccp-assessment-status"><option>Pass</option><option>Partial</option><option>Fail</option><option>Not assessed</option><option>Not applicable</option></select></label>
+          <label>Score<input id="ccp-assessment-score" type="number" min="0" max="100" placeholder="100" /></label>
+          <label>Assessor<input id="ccp-assessment-assessor" type="text" placeholder="j.smith" /></label>
+          <label>Reviewer<input id="ccp-assessment-reviewer" type="text" placeholder="security-manager" /></label>
+          <label>Reviewed at<input id="ccp-assessment-reviewed-at" type="text" placeholder="2026-08-04T16:00:00Z" /></label>
+          <label>Assessed at<input id="ccp-assessed-at" type="text" placeholder="2026-08-03T14:00:00Z" /></label>
+          <label>Valid until<input id="ccp-assessment-valid-until" type="text" placeholder="2026-11-03T14:00:00Z" /></label>
+          <label>Exception reference<input id="ccp-assessment-exception" type="text" placeholder="risk-acceptance-123" /></label>
+          <label class="ccp-field-wide">Decision notes<textarea id="ccp-assessment-notes" rows="4" placeholder="Describe the test performed, evidence reviewed, and any limitation or remediation due date."></textarea></label>
+        </div>
+        <div class="ccp-form-actions"><button id="ccp-save-assessment" class="btn btn-primary" type="button">Save assessment</button><span id="ccp-assessment-message" role="status"></span></div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Recent assessment decisions</title>
+      <table><search><query>| inputlookup ccp_assessments | sort 0 - assessed_at | table system_key scope_key framework_key framework_version requirement_key status score assessor reviewer assessed_at reviewed_at valid_until exception_reference notes</query></search><option name="count">10</option><option name="wrap">true</option><option name="drilldown">none</option></table>
+    </panel>
+  </row>
+</dashboard>

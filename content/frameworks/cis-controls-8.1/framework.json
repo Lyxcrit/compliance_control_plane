@@ -1,0 +1,30 @@
+{
+  "key": "cis-controls-8.1",
+  "name": "CIS Critical Security Controls",
+  "version": "8.1",
+  "authority": "Center for Internet Security",
+  "description": "Prioritized safeguards for defending systems and networks against prevalent attacks, including the Governance function introduced with v8.1.",
+  "source_url": "https://www.cisecurity.org/controls/v8-1",
+  "content_status": "foundational",
+  "default_selected": 0,
+  "requirements": [
+    {"key":"cis.01","title":"Inventory and Control of Enterprise Assets","description":"Actively manage, track, and correct enterprise assets connected to the infrastructure.","type":"control","category":"Asset management","source_reference":"CIS Controls v8.1: Control 1","evidence_types":["asset_inventory","reconciliation_report"]},
+    {"key":"cis.02","title":"Inventory and Control of Software Assets","description":"Actively manage, track, and correct software on enterprise assets.","type":"control","category":"Asset management","source_reference":"CIS Controls v8.1: Control 2","evidence_types":["software_inventory","approved_software_list"]},
+    {"key":"cis.03","title":"Data Protection","description":"Identify, classify, securely handle, retain, and dispose of data.","type":"control","category":"Data protection","source_reference":"CIS Controls v8.1: Control 3","evidence_types":["data_inventory","classification_policy","access_review"]},
+    {"key":"cis.04","title":"Secure Configuration of Enterprise Assets and Software","description":"Establish and maintain secure configuration processes for enterprise assets and software.","type":"control","category":"Configuration management","source_reference":"CIS Controls v8.1: Control 4","evidence_types":["configuration_baseline","configuration_scan"]},
+    {"key":"cis.05","title":"Account Management","description":"Assign and manage authorization to credentials and accounts.","type":"control","category":"Identity","source_reference":"CIS Controls v8.1: Control 5","evidence_types":["account_inventory","access_review"]},
+    {"key":"cis.06","title":"Access Control Management","description":"Create, assign, manage, and revoke access credentials and privileges.","type":"control","category":"Identity","source_reference":"CIS Controls v8.1: Control 6","evidence_types":["privileged_access_review","role_matrix"]},
+    {"key":"cis.07","title":"Continuous Vulnerability Management","description":"Continuously evaluate and track vulnerabilities on enterprise assets.","type":"control","category":"Vulnerability management","source_reference":"CIS Controls v8.1: Control 7","evidence_types":["vulnerability_scan","remediation_report"]},
+    {"key":"cis.08","title":"Audit Log Management","description":"Collect, alert, review, and retain audit logs to detect and recover from attacks.","type":"control","category":"Logging","source_reference":"CIS Controls v8.1: Control 8","evidence_types":["log_source_inventory","retention_policy","alert_history"]},
+    {"key":"cis.09","title":"Email and Web Browser Protections","description":"Improve protections and detections for email and web browser attack vectors.","type":"control","category":"Protection","source_reference":"CIS Controls v8.1: Control 9","evidence_types":["gateway_configuration","malware_alerts"]},
+    {"key":"cis.10","title":"Malware Defenses","description":"Prevent or control the installation, spread, and execution of malicious code.","type":"control","category":"Protection","source_reference":"CIS Controls v8.1: Control 10","evidence_types":["endpoint_coverage","malware_alerts"]},
+    {"key":"cis.11","title":"Data Recovery","description":"Establish and maintain data recovery practices sufficient to restore assets and data.","type":"control","category":"Recovery","source_reference":"CIS Controls v8.1: Control 11","evidence_types":["backup_inventory","restore_test"]},
+    {"key":"cis.12","title":"Network Infrastructure Management","description":"Establish and maintain a secure network architecture and lifecycle process.","type":"control","category":"Network","source_reference":"CIS Controls v8.1: Control 12","evidence_types":["network_inventory","architecture_review"]},
+    {"key":"cis.13","title":"Network Monitoring and Defense","description":"Maintain comprehensive network monitoring and defense.","type":"control","category":"Network","source_reference":"CIS Controls v8.1: Control 13","evidence_types":["network_telemetry","detection_inventory"]},
+    {"key":"cis.14","title":"Security Awareness and Skills Training","description":"Establish and maintain security awareness and role-based skills training.","type":"control","category":"People","source_reference":"CIS Controls v8.1: Control 14","evidence_types":["training_record","training_completion"]},
+    {"key":"cis.15","title":"Service Provider Management","description":"Evaluate service providers that hold enterprise data or support enterprise platforms.","type":"control","category":"Third party","source_reference":"CIS Controls v8.1: Control 15","evidence_types":["supplier_inventory","contract_review"]},
+    {"key":"cis.16","title":"Application Software Security","description":"Manage the security life cycle of application software.","type":"control","category":"Application security","source_reference":"CIS Controls v8.1: Control 16","evidence_types":["application_inventory","secure_development_review"]},
+    {"key":"cis.17","title":"Incident Response Management","description":"Establish and maintain an incident response program with defined roles and procedures.","type":"control","category":"Incident response","source_reference":"CIS Controls v8.1: Control 17","evidence_types":["incident_response_plan","exercise_record"]},
+    {"key":"cis.18","title":"Penetration Testing","description":"Test the effectiveness and resiliency of enterprise assets and controls through periodic penetration testing.","type":"control","category":"Assurance","source_reference":"CIS Controls v8.1: Control 18","evidence_types":["penetration_test_report","remediation_record"]}
+  ]
+}
