@@ -1,0 +1,117 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "compliance-control-plane-v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build_and_release:
+    name: Build + AppInspect + Publish Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve release target
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          app_version="$(awk -F ' = ' '/^version = / {print $2; exit}' splunk_app/compliance_control_plane/default/app.conf)"
+          tag="${GITHUB_REF_NAME}"
+          if [[ "${tag}" == compliance-control-plane-v* ]]; then
+            tag_version="${tag#compliance-control-plane-v}"
+            [[ "${tag_version}" == "${app_version}" ]] || {
+              echo "Release tag ${tag} does not match app version ${app_version}" >&2
+              exit 1
+            }
+            echo "release_tag=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "release_tag=false" >> "${GITHUB_OUTPUT}"
+          fi
+          echo "app_id=compliance_control_plane" >> "${GITHUB_OUTPUT}"
+          echo "package=dist/compliance_control_plane-${app_version}.tgz" >> "${GITHUB_OUTPUT}"
+          echo "appinspect_file=dist/appinspect-compliance_control_plane.json" >> "${GITHUB_OUTPUT}"
+          echo "artifact_name=compliance-control-plane-release-artifacts" >> "${GITHUB_OUTPUT}"
+          echo "app_version=${app_version}" >> "${GITHUB_OUTPUT}"
+
+      - name: Ensure scripts executable
+        run: chmod +x tools/*.sh
+
+      - name: Build and validate package
+        run: |
+          tools/validate.sh
+          test -f "${{ steps.target.outputs.package }}"
+          sha256sum "${{ steps.target.outputs.package }}" > "${{ steps.target.outputs.package }}.sha256"
+          ls -lah dist
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-appinspect-4.3.0
+
+      - name: Install AppInspect
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install splunk-appinspect==4.3.0
+
+      - name: Run Splunk AppInspect precert
+        run: |
+          splunk-appinspect inspect "${{ steps.target.outputs.package }}" \
+            --mode precert \
+            --output-file "${{ steps.target.outputs.appinspect_file }}"
+
+      - name: Gate release on AppInspect failures/errors
+        run: |
+          python3 - <<'PY'
+          import json
+          import sys
+
+          path = "${{ steps.target.outputs.appinspect_file }}"
+          with open(path, "r", encoding="utf-8") as source:
+              report = json.load(source)
+          summary = report.get("summary", {})
+          errors = int(summary.get("error", 0))
+          failures = int(summary.get("failure", 0))
+          future_failures = int(summary.get("future_failure", 0))
+          warnings = int(summary.get("warning", 0))
+          print("AppInspect summary:", summary)
+          if errors or failures or future_failures:
+              sys.exit(
+                  f"BLOCKED: AppInspect error={errors} failure={failures} "
+                  f"future_failure={future_failures}"
+              )
+          print(
+              "PASS: AppInspect error=0 failure=0 future_failure=0 "
+              f"warnings={warnings}"
+          )
+          PY
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.target.outputs.artifact_name }}
+          if-no-files-found: error
+          path: |
+            ${{ steps.target.outputs.package }}
+            ${{ steps.target.outputs.package }}.sha256
+            ${{ steps.target.outputs.appinspect_file }}
+            dist/compliance_control_plane-${{ steps.target.outputs.app_version }}.manifest.json
+
+      - name: Publish GitHub Release
+        if: steps.target.outputs.release_tag == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ steps.target.outputs.package }}
+            ${{ steps.target.outputs.package }}.sha256
+            ${{ steps.target.outputs.appinspect_file }}
+            dist/compliance_control_plane-${{ steps.target.outputs.app_version }}.manifest.json
+          generate_release_notes: true
