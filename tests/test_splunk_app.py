@@ -245,6 +245,8 @@ class SplunkAppTests(unittest.TestCase):
         check_js = (APP / "appserver/static/check.js").read_text(encoding="utf-8")
         self.assertIn("form.framework_token", check_js)
         self.assertIn("form.requirement_token", check_js)
+        self.assertIn("params.get('form.framework_token')", check_js)
+        self.assertIn("params.get('form.requirement_token')", check_js)
         self.assertIn('<fields>Framework,Requirement,"How to prove it"</fields>', requirements_view)
         self.assertIn('<option name="drilldown">row</option>', requirements_view)
         self.assertIn('<link>/app/compliance_control_plane/check?form.framework_token=$row.framework_key$&amp;form.requirement_token=$row.requirement_key$</link>', requirements_view)

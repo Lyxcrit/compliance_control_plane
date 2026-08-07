@@ -5,8 +5,10 @@ require([
   'use strict';
 
   var params = new URLSearchParams(window.location.search);
-  var frameworkKey = params.get('framework_token');
-  var requirementKey = params.get('requirement_token');
+  // Simple XML form drilldowns use form.<token>; accept the unprefixed form
+  // as well so direct links and older saved URLs remain usable.
+  var frameworkKey = params.get('form.framework_token') || params.get('framework_token');
+  var requirementKey = params.get('form.requirement_token') || params.get('requirement_token');
   if (!frameworkKey && !requirementKey) {
     return;
   }
