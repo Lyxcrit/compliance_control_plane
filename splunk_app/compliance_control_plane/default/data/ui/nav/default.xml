@@ -1,6 +1,7 @@
 <nav search_view="home">
   <view name="home" default="true" />
   <view name="setup" />
+  <view name="governance" />
   <collection label="Checks">
     <view name="requirements" />
     <view name="check" />

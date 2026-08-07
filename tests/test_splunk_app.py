@@ -19,6 +19,7 @@ class SplunkAppTests(unittest.TestCase):
         self.assertTrue((APP / "default/data/ui/views/findings.xml").is_file())
         self.assertTrue((APP / "default/data/ui/views/audit_package.xml").is_file())
         self.assertTrue((APP / "default/data/ui/views/technical_coverage.xml").is_file())
+        self.assertTrue((APP / "default/data/ui/views/governance.xml").is_file())
         self.assertTrue((APP / "appserver/static/measurement.js").is_file())
 
     def test_navigation_is_grouped_by_auditor_workflow(self) -> None:
@@ -28,6 +29,7 @@ class SplunkAppTests(unittest.TestCase):
         self.assertIn('<collection label="Evidence and remediation">', navigation)
         self.assertIn('<collection label="Framework measurements">', navigation)
         self.assertIn('<view name="technical_coverage" />', navigation)
+        self.assertIn('<view name="governance" />', navigation)
 
     def test_app_version_is_semver(self) -> None:
         app_conf = (APP / "default/app.conf").read_text(encoding="utf-8")
@@ -42,9 +44,16 @@ class SplunkAppTests(unittest.TestCase):
         css = (APP / "appserver/static/app.css").read_text(encoding="utf-8")
         self.assertIn(".ccp-help::after", css)
         self.assertIn("content: attr(data-tooltip)", css)
-        for name in ("home", "requirements", "check", "readiness", "audit_review", "audit_package", "assessment", "evidence", "setup"):
+        for name in ("home", "requirements", "check", "readiness", "audit_review", "audit_package", "assessment", "evidence", "setup", "governance"):
             view = (APP / f"default/data/ui/views/{name}.xml").read_text(encoding="utf-8")
             self.assertIn("ccp-help", view, f"Missing auditor help in {name}.xml")
+
+    def test_governance_view_preserves_mapping_boundaries(self) -> None:
+        view = (APP / "default/data/ui/views/governance.xml").read_text(encoding="utf-8")
+        self.assertIn("mapping_reviews.csv", view)
+        self.assertIn("mapping_status", view)
+        self.assertIn("Approved for roll-up", view)
+        self.assertIn("does not approve a one-to-one control mapping", view)
 
     def test_every_requirement_has_actionable_playbook(self) -> None:
         with (APP / "lookups/requirements.csv").open(newline="", encoding="utf-8") as requirements_file:
