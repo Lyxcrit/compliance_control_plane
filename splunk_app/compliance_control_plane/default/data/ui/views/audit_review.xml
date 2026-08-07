@@ -3,7 +3,7 @@
   <description>Current pass, partial, fail, and not-assessed status by requirement.</description>
   <fieldset submitButton="false">
     <input type="dropdown" token="framework_token" searchWhenChanged="true">
-      <label>Framework</label>
+      <label>Framework <span class="ccp-help ccp-filter-help" title="Choose one framework for a focused audit review, or leave All active frameworks for a portfolio view.">i</span></label>
       <choice value="*">All active frameworks</choice>
       <fieldForLabel>framework_name</fieldForLabel>
       <fieldForValue>framework_key</fieldForValue>
@@ -11,7 +11,7 @@
       <default>*</default>
     </input>
     <input type="dropdown" token="system_token" searchWhenChanged="true">
-      <label>System</label>
+      <label>System <span class="ccp-help ccp-filter-help" title="Optional system filter. Use a specific system when reviewing owner action; use All active systems for an audit-wide view.">i</span></label>
       <choice value="*">All active systems</choice>
       <fieldForLabel>system_name</fieldForLabel>
       <fieldForValue>system_key</fieldForValue>

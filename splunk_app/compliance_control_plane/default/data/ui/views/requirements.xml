@@ -3,7 +3,7 @@
   <description>Explore requirements, evidence expectations, and implementation guidance.</description>
   <fieldset submitButton="false">
     <input type="dropdown" token="framework_token" searchWhenChanged="true">
-      <label>Framework</label>
+      <label>Framework <span class="ccp-help ccp-filter-help" title="Choose a framework first. Categories and requirements are rebuilt from this selection.">i</span></label>
       <choice value="">Select a framework</choice>
       <fieldForLabel>framework_name</fieldForLabel>
       <fieldForValue>framework_key</fieldForValue>
@@ -15,7 +15,7 @@
       </change>
     </input>
     <input type="dropdown" token="category_token" searchWhenChanged="true">
-      <label>Category</label>
+      <label>Category <span class="ccp-help ccp-filter-help" title="Categories belong to the selected framework. Select a framework before choosing a category.">i</span></label>
       <choice value="__select_framework__">Select a framework first</choice>
       <choice value="*">All categories</choice>
       <fieldForLabel>category</fieldForLabel>
@@ -24,7 +24,7 @@
       <default>__select_framework__</default>
     </input>
     <input type="dropdown" token="verification_token" searchWhenChanged="true">
-      <label>How to prove it</label>
+      <label>How to prove it <span class="ccp-help ccp-filter-help" title="Document review means a policy or record is required; Splunk tracking means the app can measure supporting telemetry; hybrid requires both.">i</span></label>
       <choice value="*">All verification routes</choice>
       <choice value="document">Document review</choice>
       <choice value="technical">Splunk tracking</choice>
@@ -32,6 +32,11 @@
       <default>*</default>
     </input>
   </fieldset>
+  <row>
+    <panel>
+      <html><div class="ccp-next-step"><strong>How to use this page:</strong> choose a framework, narrow the category if needed, then open a check. Each check explains what to implement, how to validate it, and what evidence an auditor should expect.</div></html>
+    </panel>
+  </row>
   <row depends="$framework_selected$">
     <panel>
       <title>Requirements and implementation path</title>

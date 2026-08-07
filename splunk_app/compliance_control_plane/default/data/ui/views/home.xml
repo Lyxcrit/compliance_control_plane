@@ -3,7 +3,7 @@
   <description>Evidence readiness and operational compliance posture.</description>
   <fieldset submitButton="false">
     <input type="dropdown" token="framework_token" searchWhenChanged="true">
-      <label>Framework</label>
+      <label>Framework <span class="ccp-help ccp-filter-help" title="Controls every count and table on this page. All active frameworks is the recommended starting view.">i</span></label>
       <choice value="*">All active frameworks</choice>
       <fieldForLabel>framework_name</fieldForLabel>
       <fieldForValue>framework_key</fieldForValue>

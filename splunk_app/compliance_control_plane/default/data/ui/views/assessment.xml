@@ -23,14 +23,14 @@
           <label>Framework version<input id="ccp-assessment-framework-version" type="text" readonly="readonly" placeholder="Select a framework" /></label>
           <label>Content digest<input id="ccp-assessment-content-digest" type="text" readonly="readonly" placeholder="Select a framework" /></label>
           <label>Check <span class="ccp-help" title="Choose the requirement you tested. Changing framework refreshes this list.">i</span><select id="ccp-assessment-requirement"><option value="">Select a framework first</option></select></label>
-          <label>Status<select id="ccp-assessment-status"><option>Pass</option><option>Partial</option><option>Fail</option><option>Not assessed</option><option>Not applicable</option></select></label>
-          <label>Score<input id="ccp-assessment-score" type="number" min="0" max="100" placeholder="100" /></label>
-          <label>Assessor<input id="ccp-assessment-assessor" type="text" placeholder="j.smith" /></label>
-          <label>Reviewer<input id="ccp-assessment-reviewer" type="text" placeholder="security-manager" /></label>
-          <label>Reviewed at<input id="ccp-assessment-reviewed-at" type="text" placeholder="2026-08-04T16:00:00Z" /></label>
-          <label>Assessed at<input id="ccp-assessed-at" type="text" placeholder="2026-08-03T14:00:00Z" /></label>
-          <label>Valid until<input id="ccp-assessment-valid-until" type="text" placeholder="2026-11-03T14:00:00Z" /></label>
-          <label>Exception reference<input id="ccp-assessment-exception" type="text" placeholder="risk-acceptance-123" /></label>
+          <label>Status <span class="ccp-help" title="Pass requires implementation, validation, and current evidence. Use Partial or Fail when remediation remains; use Not applicable only with documented justification.">i</span><select id="ccp-assessment-status"><option>Pass</option><option>Partial</option><option>Fail</option><option>Not assessed</option><option>Not applicable</option></select></label>
+          <label>Score <span class="ccp-help" title="Optional numeric support for the decision. Do not use a score to override the stated pass, partial, or fail criteria.">i</span><input id="ccp-assessment-score" type="number" min="0" max="100" placeholder="100" /></label>
+          <label>Assessor <span class="ccp-help" title="The person who performed or reviewed the test and made the initial decision.">i</span><input id="ccp-assessment-assessor" type="text" placeholder="j.smith" /></label>
+          <label>Reviewer <span class="ccp-help" title="The independent reviewer or approving role for this assessment result.">i</span><input id="ccp-assessment-reviewer" type="text" placeholder="security-manager" /></label>
+          <label>Reviewed at <span class="ccp-help" title="When the reviewer confirmed the assessment. Use an ISO-8601 timestamp.">i</span><input id="ccp-assessment-reviewed-at" type="text" placeholder="2026-08-04T16:00:00Z" /></label>
+          <label>Assessed at <span class="ccp-help" title="When the test was performed or the decision was made. Use an ISO-8601 timestamp.">i</span><input id="ccp-assessed-at" type="text" placeholder="2026-08-03T14:00:00Z" /></label>
+          <label>Valid until <span class="ccp-help" title="The date after which this decision must be refreshed. Set it according to your assessment policy and evidence freshness requirements.">i</span><input id="ccp-assessment-valid-until" type="text" placeholder="2026-11-03T14:00:00Z" /></label>
+          <label>Exception reference <span class="ccp-help" title="Required when a risk is formally accepted or a decision depends on an exception. Link the approved record or ticket.">i</span><input id="ccp-assessment-exception" type="text" placeholder="risk-acceptance-123" /></label>
           <label class="ccp-field-wide">Decision notes<textarea id="ccp-assessment-notes" rows="4" placeholder="Describe the test performed, evidence reviewed, and any limitation or remediation due date."></textarea></label>
         </div>
         <div class="ccp-form-actions"><button id="ccp-save-assessment" class="btn btn-primary" type="button">Save assessment</button><span id="ccp-assessment-message" role="status"></span></div>

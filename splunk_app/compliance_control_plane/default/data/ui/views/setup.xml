@@ -24,10 +24,10 @@
           <p>Assessments and evidence must identify the environment they support. Use a stable scope key that matches your system or asset boundary.</p>
         </div>
         <div class="ccp-form-grid">
-          <label>Scope key<input id="ccp-scope-key" type="text" placeholder="prod-security-boundary" /></label>
-          <label>Scope name<input id="ccp-scope-name" type="text" placeholder="Production security boundary" /></label>
-          <label>Scope type<select id="ccp-scope-type"><option value="organization">Organization</option><option value="environment">Environment</option><option value="business_unit">Business unit</option><option value="system">System</option><option value="asset_group">Asset group</option><option value="data_boundary">Data boundary</option></select></label>
-          <label>Owner<input id="ccp-scope-owner" type="text" placeholder="security-governance" /></label>
+          <label>Scope key <span class="ccp-help" title="A stable machine-readable identifier. Do not change it after evidence and assessments are recorded.">i</span><input id="ccp-scope-key" type="text" placeholder="prod-security-boundary" /></label>
+          <label>Scope name <span class="ccp-help" title="The human-readable boundary name an auditor will recognize, such as Production security boundary.">i</span><input id="ccp-scope-name" type="text" placeholder="Production security boundary" /></label>
+          <label>Scope type <span class="ccp-help" title="Choose the approved boundary type that best describes what is included in this audit scope.">i</span><select id="ccp-scope-type"><option value="organization">Organization</option><option value="environment">Environment</option><option value="business_unit">Business unit</option><option value="system">System</option><option value="asset_group">Asset group</option><option value="data_boundary">Data boundary</option></select></label>
+          <label>Owner <span class="ccp-help" title="The person or team accountable for maintaining this audit boundary and approving changes.">i</span><input id="ccp-scope-owner" type="text" placeholder="security-governance" /></label>
           <label class="ccp-field-wide">Description<textarea id="ccp-scope-description" rows="3" placeholder="What systems, assets, data, and exclusions are in this boundary?"></textarea></label>
         </div>
         <div class="ccp-form-actions"><button id="ccp-save-scope" class="btn btn-secondary" type="button">Save audit scope</button><span id="ccp-scope-message" role="status"></span></div>
@@ -49,8 +49,8 @@
           <p>Use this lightweight record to connect assessments and evidence to an accountable system inside an audit scope.</p>
         </div>
         <div class="ccp-form-grid">
-          <label>System key<input id="ccp-system-record-key" type="text" placeholder="prod-splunk-search" /></label>
-          <label>System name<input id="ccp-system-record-name" type="text" placeholder="Production Splunk search platform" /></label>
+          <label>System key <span class="ccp-help" title="A stable identifier for the system being assessed. Use the same key everywhere this system appears.">i</span><input id="ccp-system-record-key" type="text" placeholder="prod-splunk-search" /></label>
+          <label>System name <span class="ccp-help" title="The name an auditor and system owner will recognize. Avoid undocumented abbreviations.">i</span><input id="ccp-system-record-name" type="text" placeholder="Production Splunk search platform" /></label>
           <label>Audit scope<select id="ccp-system-record-scope"><option value="">Loading active scopes...</option></select></label>
           <label>System type<select id="ccp-system-record-type"><option value="application">Application</option><option value="platform">Platform</option><option value="service">Shared service</option><option value="infrastructure">Infrastructure</option><option value="data_store">Data store</option><option value="identity">Identity service</option><option value="endpoint">Endpoint platform</option></select></label>
           <label>Environment<select id="ccp-system-record-environment"><option value="production">Production</option><option value="staging">Staging</option><option value="development">Development</option><option value="shared">Shared</option><option value="third_party">Third party</option></select></label>

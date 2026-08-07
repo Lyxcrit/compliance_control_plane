@@ -8,7 +8,7 @@
   <search id="CCPTechnicalChecks"><query>| inputlookup technical_checks.csv | sort display_name | table check_key display_name measurement_key adapter_key evidence_type search expected_value limitations</query></search>
   <fieldset submitButton="false">
     <input type="dropdown" token="maturity_token" searchWhenChanged="true">
-      <label>M-26-14 retrieval target</label>
+      <label>M-26-14 retrieval target <span class="ccp-help ccp-filter-help" title="Select the records-retention maturity target being tested. This changes the expected retrieval window used by the measurement panels.">i</span></label>
       <choice value="1">Level 1: 6 months retrievable</choice>
       <choice value="2">Level 2: 12 months retrievable</choice>
       <choice value="3">Level 3: 12 months retrievable</choice>
@@ -38,9 +38,9 @@
           <label>Run automated check<select id="ccp-measurement-check"><option value="">Loading executable checks...</option></select></label>
           <label>Measurement<select id="ccp-measurement-name"><option value="">Loading measurements...</option></select></label>
           <label>Adapter<select id="ccp-measurement-adapter"><option value="">Loading adapters...</option></select></label>
-          <label>Status<select id="ccp-measurement-status"><option>Pass</option><option>Partial</option><option>Fail</option><option>Not assessed</option><option>Not applicable</option></select></label>
-          <label>Observed value<input id="ccp-measurement-observed" type="text" placeholder="42 indexes, 38 meeting target" /></label>
-          <label>Expected value<input id="ccp-measurement-expected" type="text" placeholder="All in-scope indexes meet target" /></label>
+          <label>Status <span class="ccp-help" title="This is the measurement result, not the final audit decision. Use Not assessed when the data source is unavailable or the test was not performed.">i</span><select id="ccp-measurement-status"><option>Pass</option><option>Partial</option><option>Fail</option><option>Not assessed</option><option>Not applicable</option></select></label>
+          <label>Observed value <span class="ccp-help" title="Record what Splunk actually measured, including counts or the value used to reach the result.">i</span><input id="ccp-measurement-observed" type="text" placeholder="42 indexes, 38 meeting target" /></label>
+          <label>Expected value <span class="ccp-help" title="State the condition that must be true for this measurement to pass. This makes the result reviewable later.">i</span><input id="ccp-measurement-expected" type="text" placeholder="All in-scope indexes meet target" /></label>
           <label>Measured at<input id="ccp-measurement-at" type="text" placeholder="2026-08-04T14:00:00Z" /></label>
           <label>Source<input id="ccp-measurement-source" type="text" placeholder="Measurement Center: Index retention configuration" /></label>
           <label>Evidence key<input id="ccp-measurement-evidence" type="text" placeholder="evidence-2026-0001" /></label>
