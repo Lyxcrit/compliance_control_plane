@@ -69,7 +69,7 @@
   </row>
   <row>
     <panel>
-      <html><div class="ccp-form-actions"><a class="btn btn-primary" href="/app/compliance_control_plane/assessment?framework_token=$framework_token$&amp;requirement_token=$requirement_token$&amp;system_token=$system_token$&amp;scope_token=$scope_token$">Record assessment</a><a class="btn btn-secondary" href="/app/compliance_control_plane/evidence?framework_token=$framework_token$&amp;requirement_token=$requirement_token$&amp;system_token=$system_token$&amp;scope_token=$scope_token$">Record evidence</a></div></html>
+      <html><div class="ccp-form-actions"><a class="btn btn-primary" href="/app/compliance_control_plane/assessment?framework_token=$framework_token$&amp;requirement_token=$requirement_token$&amp;system_token=$system_token$&amp;scope_token=$scope_token$">Record assessment</a><a class="btn btn-secondary" href="/app/compliance_control_plane/evidence?framework_token=$framework_token$&amp;requirement_token=$requirement_token$&amp;system_token=$system_token$&amp;scope_token=$scope_token$">Record evidence</a><a class="btn btn-secondary" href="/app/compliance_control_plane/findings?framework_token=$framework_token$&amp;requirement_token=$requirement_token$&amp;scope_token=$scope_token$">Record remediation finding</a></div></html>
     </panel>
   </row>
   <row>

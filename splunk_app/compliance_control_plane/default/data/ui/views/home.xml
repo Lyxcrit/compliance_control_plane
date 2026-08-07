@@ -81,12 +81,12 @@
       <title>What needs attention</title>
       <table>
         <search>
-          <query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | lookup policy_playbook.csv framework_key requirement_key OUTPUT implementation_title implementation_steps owner_role common_gap | table framework_name requirement_key title category verification_label implementation_title owner_role common_gap | rename framework_name as Framework title as Requirement category as Category verification_label as "How to prove it" implementation_title as "How to implement" owner_role as "Suggested owner" common_gap as "Common gap"</query>
+          <query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | lookup policy_playbook.csv framework_key requirement_key OUTPUT implementation_title implementation_steps owner_role common_gap | table framework_key framework_name requirement_key title category verification_label implementation_title owner_role common_gap | rename framework_name as Framework title as Requirement category as Category verification_label as "How to prove it" implementation_title as "How to implement" owner_role as "Suggested owner" common_gap as "Common gap"</query>
         </search>
         <option name="count">8</option>
         <option name="wrap">true</option>
         <option name="drilldown">row</option>
-        <drilldown><link target="_blank">/app/compliance_control_plane/check?requirement_token=$row.requirement_key$</link></drilldown>
+        <drilldown><link target="_blank">/app/compliance_control_plane/check?framework_token=$row.framework_key$&amp;requirement_token=$row.requirement_key$</link></drilldown>
       </table>
     </panel>
   </row>
