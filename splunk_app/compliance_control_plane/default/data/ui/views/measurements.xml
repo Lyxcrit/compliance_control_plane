@@ -130,7 +130,7 @@
       <title>Inventory visibility: Splunk host metadata</title>
       <table>
         <search>
-          <query>| makeresults | eval source="Splunk host metadata", asset_count=0, measured=0 | append [| metadata type=hosts index=* | eval source="Splunk host metadata", measured=if(totalCount&gt;0,1,0) | stats dc(host) as asset_count, max(measured) as measured by source] | stats max(asset_count) as asset_count, max(measured) as measured by source | table source measured asset_count | rename source as Source measured as "Data available (1=yes)" asset_count as "Assets observed"</query>
+          <query>| makeresults | eval source="Splunk host metadata", measured=0, asset_count=0, measured_at="1970-01-01T00:00:00Z" | append [| inputlookup ccp_measurement_cache | search adapter_key="splunk.host_metadata" | sort 0 - measured_at | head 1 | rex field=observed_value "^(?&lt;asset_count&gt;[0-9]+)" | eval source="Splunk host metadata", measured=if(status="Pass",1,0)] | sort 0 - measured_at | head 1 | table source measured asset_count | rename source as Source measured as "Data available (1=yes)" asset_count as "Assets observed"</query>
         </search>
         <option name="wrap">true</option><option name="drilldown">none</option>
       </table>
