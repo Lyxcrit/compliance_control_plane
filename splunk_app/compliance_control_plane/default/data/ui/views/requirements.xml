@@ -61,7 +61,11 @@
         <option name="count">20</option>
         <option name="wrap">true</option>
         <option name="drilldown">cell</option>
-        <drilldown><link>/app/compliance_control_plane/check?framework_token=$row.framework_key$&amp;requirement_token=$row.requirement_key$</link></drilldown>
+        <drilldown>
+          <condition field="Open check">
+            <link>/app/compliance_control_plane/check?form.framework_token=$row.framework_key$&amp;form.requirement_token=$row.requirement_key$</link>
+          </condition>
+        </drilldown>
       </table>
     </panel>
   </row>
