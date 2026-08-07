@@ -56,16 +56,14 @@
       <title>Open a check</title>
       <table id="ccp_requirements_open_table">
         <search>
-          <query>| inputlookup requirements.csv | search framework_key="$framework_token$" | search category="$category_token$" OR "$category_token$"="*" | search verification_mode="$verification_token$" OR "$verification_token$"="*" | eval "Open check"=requirement_key | table framework_name requirement_key title verification_label "Open check" | rename framework_name as Framework title as Requirement verification_label as "How to prove it"</query>
+          <query>| inputlookup requirements.csv | search framework_key="$framework_token$" | search category="$category_token$" OR "$category_token$"="*" | search verification_mode="$verification_token$" OR "$verification_token$"="*" | table framework_key requirement_key framework_name title verification_label | rename framework_name as Framework title as Requirement verification_label as "How to prove it"</query>
         </search>
         <option name="count">20</option>
         <option name="wrap">true</option>
-        <option name="drilldown">cell</option>
-        <drilldown>
-          <condition field="Open check">
-            <link>/app/compliance_control_plane/check?form.framework_token=$framework_token$&amp;form.requirement_token=$click.value2$</link>
-          </condition>
-        </drilldown>
+        <fields>Framework,Requirement,"How to prove it"</fields>
+        <option name="underLabel">Click any requirement row to open its Check Detail view.</option>
+        <option name="drilldown">row</option>
+        <drilldown><link>/app/compliance_control_plane/check?form.framework_token=$row.framework_key$&amp;form.requirement_token=$row.requirement_key$</link></drilldown>
       </table>
     </panel>
   </row>
