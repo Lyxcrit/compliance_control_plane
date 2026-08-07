@@ -63,7 +63,11 @@
         <fields>Framework,Requirement,"How to prove it"</fields>
         <option name="underLabel">Click any requirement row to open its Check Detail view.</option>
         <option name="drilldown">row</option>
-        <drilldown><link>/app/compliance_control_plane/check?form.framework_token=$row.framework_key$&amp;form.requirement_token=$row.requirement_key$</link></drilldown>
+        <drilldown target="blank">
+          <link><![CDATA[
+            /app/compliance_control_plane/check?form.framework_token=$row.framework_key$&form.requirement_token=$row.requirement_key$
+          ]]></link>
+        </drilldown>
       </table>
     </panel>
   </row>

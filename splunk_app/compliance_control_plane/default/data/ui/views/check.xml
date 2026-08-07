@@ -1,4 +1,4 @@
-<form version="1.1" theme="light" script="check.js" stylesheet="app.css">
+<form version="1.1" theme="light" stylesheet="app.css">
   <label>Check Detail</label>
   <description>Per-check documentation, implementation guidance, validation, and current status.</description>
   <fieldset submitButton="false">
@@ -10,8 +10,8 @@
       <choice value="">Select a framework</choice>
       <default></default>
       <change>
-        <condition match="'value' == &quot;omb-m-26-14&quot;"><unset token="form.requirement_token"></unset><unset token="requirement_token"></unset><set token="m26_maturity">true</set></condition>
-        <condition match="'value' != &quot;omb-m-26-14&quot;"><unset token="form.requirement_token"></unset><unset token="requirement_token"></unset><unset token="m26_maturity"></unset></condition>
+        <condition match="'value' == &quot;omb-m-26-14&quot;"><set token="m26_maturity">true</set></condition>
+        <condition match="'value' != &quot;omb-m-26-14&quot;"><unset token="m26_maturity"></unset></condition>
       </change>
     </input>
     <input type="dropdown" token="requirement_token" searchWhenChanged="true">
