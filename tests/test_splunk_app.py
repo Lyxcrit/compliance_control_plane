@@ -243,6 +243,7 @@ class SplunkAppTests(unittest.TestCase):
         home_view = (APP / "default/data/ui/views/home.xml").read_text(encoding="utf-8")
         self.assertIn("framework_token=$row.framework_key$", home_view)
         self.assertIn("Record remediation finding", check_view)
+        self.assertNotIn("scope_token=$scope_token$", check_view)
         technical_coverage = (APP / "default/data/ui/views/technical_coverage.xml").read_text(encoding="utf-8")
         self.assertNotIn("dc(", technical_coverage)
         setup_js = (APP / "appserver/static/setup.js").read_text(encoding="utf-8")
