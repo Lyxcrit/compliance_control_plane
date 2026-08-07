@@ -99,7 +99,7 @@
       <title>Index retention configuration</title>
       <table>
         <search>
-          <query>| rest /services/data/indexes splunk_server=local | search disabled=0 NOT data-tooltip="_*" aria-label="_*" | eval retention_days=round(frozenTimePeriodInSecs/86400,1), target_days=case("$maturity_token$"="1",180,"$maturity_token$"="2",365,"$maturity_token$"="3",365,"$maturity_token$"="4",365,1=1,180) | eval status=case(retention_days&gt;=target_days,"Meets retrieval target",retention_days&lt;target_days,"Below retrieval target",1=1,"Not measured") | table title retention_days target_days status homePath coldPath | rename title as Index retention_days as "Configured retention (days)" target_days as "Target (days)" homePath as "Hot path" coldPath as "Cold path"</query>
+          <query>| rest /services/data/indexes splunk_server=local | search disabled=0 NOT title="_*" | eval retention_days=round(frozenTimePeriodInSecs/86400,1), target_days=case("$maturity_token$"="1",180,"$maturity_token$"="2",365,"$maturity_token$"="3",365,"$maturity_token$"="4",365,1=1,180) | eval status=case(retention_days&gt;=target_days,"Meets retrieval target",retention_days&lt;target_days,"Below retrieval target",1=1,"Not measured") | table title retention_days target_days status homePath coldPath | rename title as Index retention_days as "Configured retention (days)" target_days as "Target (days)" homePath as "Hot path" coldPath as "Cold path"</query>
         </search>
         <option name="count">15</option><option name="wrap">true</option><option name="drilldown">none</option>
       </table>
@@ -110,7 +110,7 @@
       <title>Retention measurement summary</title>
       <single>
         <search>
-          <query>| rest /services/data/indexes splunk_server=local | search disabled=0 NOT data-tooltip="_*" aria-label="_*" | eval retention_days=round(frozenTimePeriodInSecs/86400,1), target_days=case("$maturity_token$"="1",180,"$maturity_token$"="2",365,"$maturity_token$"="3",365,"$maturity_token$"="4",365,1=1,180) | eval status=if(retention_days&gt;=target_days,"Meets target","Below target") | stats count as indexes, count(eval(status="Meets target")) as meeting_target, count(eval(status="Below target")) as below_target | eval summary=meeting_target." of ".indexes." indexes meet the configured retrieval target" | table summary below_target</query>
+          <query>| rest /services/data/indexes splunk_server=local | search disabled=0 NOT title="_*" | eval retention_days=round(frozenTimePeriodInSecs/86400,1), target_days=case("$maturity_token$"="1",180,"$maturity_token$"="2",365,"$maturity_token$"="3",365,"$maturity_token$"="4",365,1=1,180) | eval status=if(retention_days&gt;=target_days,"Meets target","Below target") | stats count as indexes, count(eval(status="Meets target")) as meeting_target, count(eval(status="Below target")) as below_target | eval summary=meeting_target." of ".indexes." indexes meet the configured retrieval target" | table summary below_target</query>
         </search>
         <option name="underLabel">configuration check only; searchability requires a separate test</option><option name="drilldown">none</option>
       </single>
