@@ -19,12 +19,14 @@
 .ccp-callout a { color: #235789; font-weight: 650; }
 .ccp-help { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; margin-left: 3px; border: 1px solid #829ab1; border-radius: 50%; color: #235789; font-size: 10px; font-weight: 700; cursor: help; vertical-align: 1px; }
 .ccp-help:focus { outline: 2px solid #2a9d8f; outline-offset: 2px; }
-.ccp-help::after { position: absolute; z-index: 20; top: calc(100% + 8px); left: 0; display: none; width: 240px; padding: 9px 10px; border: 1px solid #486581; border-radius: 3px; background: #243b53; color: #ffffff; content: attr(title); font-size: 12px; font-weight: 400; line-height: 1.4; text-align: left; white-space: normal; box-shadow: 0 3px 10px rgba(16, 42, 67, .2); }
+.ccp-help::after { position: absolute; z-index: 20; top: calc(100% + 8px); left: 0; display: none; width: 240px; padding: 9px 10px; border: 1px solid #486581; border-radius: 3px; background: #243b53; color: #ffffff; content: attr(data-tooltip); font-size: 12px; font-weight: 400; line-height: 1.4; text-align: left; white-space: normal; box-shadow: 0 3px 10px rgba(16, 42, 67, .2); }
 .ccp-help::before { position: absolute; z-index: 21; top: calc(100% + 3px); left: 6px; display: none; border-right: 5px solid transparent; border-bottom: 5px solid #243b53; border-left: 5px solid transparent; content: ''; }
 .ccp-help:hover::after, .ccp-help:hover::before, .ccp-help:focus::after, .ccp-help:focus::before { display: block; }
 .ccp-filter-help { margin-left: 4px; }
 .ccp-next-step { margin-top: 12px; padding: 10px 12px; border: 1px solid #d9e2ec; border-radius: 3px; background: #f7f9fc; color: #52606d; font-size: 12px; line-height: 1.45; }
 .ccp-next-step strong { color: #243b53; }
+.ccp-filter-guide { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 2px; padding: 8px 12px; border-left: 3px solid #829ab1; background: #f7f9fc; color: #52606d; font-size: 12px; line-height: 1.45; }
+.ccp-filter-guide strong { color: #243b53; }
 .dashboard-cell { border-radius: 4px; }
 .ccp-section-heading { padding: 8px 0 18px; color: #243b53; }
 .ccp-section-heading h2 { margin: 4px 0 8px; font-size: 22px; }

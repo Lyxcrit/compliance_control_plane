@@ -3,7 +3,7 @@
   <description>Review a fixed, exportable assessment snapshot with scope, framework versions, evidence, and remediation.</description>
   <fieldset submitButton="false">
     <input type="dropdown" token="framework_token" searchWhenChanged="true">
-      <label>Framework <span class="ccp-help ccp-filter-help" title="The framework content included in the export. All selected frameworks creates one combined package index.">i</span></label>
+      <label>Framework</label>
       <choice value="*">All selected frameworks</choice>
       <fieldForLabel>framework_name</fieldForLabel>
       <fieldForValue>framework_key</fieldForValue>
@@ -11,16 +11,17 @@
       <default>*</default>
     </input>
     <input type="dropdown" token="scope_token" searchWhenChanged="true">
-      <label>Audit scope <span class="ccp-help ccp-filter-help" title="The boundary represented by this package. Select a specific scope when preparing an auditor handoff.">i</span></label>
+      <label>Audit scope</label>
       <choice value="*">All active scopes</choice>
       <fieldForLabel>scope_name</fieldForLabel>
       <fieldForValue>scope_key</fieldForValue>
       <search><query>| inputlookup ccp_scopes | search status=active | sort scope_name | fields scope_key scope_name</query></search>
       <default>*</default>
     </input>
-    <input type="text" token="package_earliest" searchWhenChanged="false"><label>Assessment period start <span class="ccp-help ccp-filter-help" title="The earliest assessment and evidence time included in the package. Use a fixed period for repeatable exports.">i</span></label><default>-30d@d</default></input>
-    <input type="text" token="package_latest" searchWhenChanged="false"><label>Assessment period end <span class="ccp-help ccp-filter-help" title="The latest time included in the package. Keep this fixed when sending the package to an auditor.">i</span></label><default>now</default></input>
+    <input type="text" token="package_earliest" searchWhenChanged="false"><label>Assessment period start</label><default>-30d@d</default></input>
+    <input type="text" token="package_latest" searchWhenChanged="false"><label>Assessment period end</label><default>now</default></input>
   </fieldset>
+  <row><panel><html><div class="ccp-filter-guide"><span><strong>Framework:</strong> controls the framework content included in the export. <span class="ccp-help" tabindex="0" data-tooltip="The framework content included in the export. All selected frameworks creates one combined package index." aria-label="The framework content included in the export. All selected frameworks creates one combined package index.">i</span></span><span><strong>Audit scope:</strong> select a specific boundary when preparing an auditor handoff. <span class="ccp-help" tabindex="0" data-tooltip="The boundary represented by this package. Select a specific scope when preparing an auditor handoff." aria-label="The boundary represented by this package. Select a specific scope when preparing an auditor handoff.">i</span></span><span><strong>Period:</strong> use fixed start and end values for a repeatable package. <span class="ccp-help" tabindex="0" data-tooltip="The package period controls which assessment and evidence records are included in the export." aria-label="The package period controls which assessment and evidence records are included in the export.">i</span></span></div></html></panel></row>
   <row>
     <panel>
       <html><div class="ccp-page-header"><div class="ccp-eyebrow ccp-eyebrow-dark">AUDIT PACKAGE</div><h1>Fixed assessment snapshot</h1><p>Use the tables below as the package index. Export each table from Splunk after confirming the framework versions, scope, period, and evidence review status.</p></div></html>

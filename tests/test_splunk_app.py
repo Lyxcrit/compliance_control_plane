@@ -41,7 +41,7 @@ class SplunkAppTests(unittest.TestCase):
     def test_auditor_help_is_available_on_filters_and_forms(self) -> None:
         css = (APP / "appserver/static/app.css").read_text(encoding="utf-8")
         self.assertIn(".ccp-help::after", css)
-        self.assertIn("content: attr(title)", css)
+        self.assertIn("content: attr(data-tooltip)", css)
         for name in ("home", "requirements", "check", "readiness", "audit_review", "audit_package", "assessment", "evidence", "setup"):
             view = (APP / f"default/data/ui/views/{name}.xml").read_text(encoding="utf-8")
             self.assertIn("ccp-help", view, f"Missing auditor help in {name}.xml")

@@ -3,7 +3,7 @@
   <description>Per-check documentation, implementation guidance, validation, and current status.</description>
   <fieldset submitButton="false">
     <input type="dropdown" token="framework_token" searchWhenChanged="true">
-      <label>Framework <span class="ccp-help ccp-filter-help" title="Choose the framework that owns the check. Changing it clears the previous check so results cannot be mixed across frameworks.">i</span></label>
+      <label>Framework</label>
       <fieldForLabel>framework_name</fieldForLabel>
       <fieldForValue>framework_key</fieldForValue>
       <search><query>| inputlookup framework_catalog.csv | lookup ccp_framework_selections framework_key OUTPUT selected | eval selected_value=tostring(coalesce(selected,default_selected)), selected=if(selected_value="1" OR selected_value="true",1,0) | search status=active selected=1 | fields framework_key framework_name</query></search>
@@ -15,7 +15,7 @@
       </change>
     </input>
     <input type="dropdown" token="requirement_token" searchWhenChanged="true">
-      <label>Check <span class="ccp-help ccp-filter-help" title="Select the requirement you are reviewing. The definition, criteria, evidence, and assessment panels all follow this choice.">i</span></label>
+      <label>Check</label>
       <fieldForLabel>title</fieldForLabel>
       <fieldForValue>requirement_key</fieldForValue>
       <search><query>| inputlookup requirements.csv | search framework_key="$framework_token$" | fields requirement_key title</query></search>
@@ -23,8 +23,9 @@
       <default></default>
       <change><set token="requirement_token">$value$</set></change>
     </input>
-    <input type="text" token="system_token" searchWhenChanged="true"><label>System key <span class="ccp-help ccp-filter-help" title="Optional system key filter. Leave * to review evidence and assessments across all systems.">i</span></label><default>*</default></input>
+    <input type="text" token="system_token" searchWhenChanged="true"><label>System key</label><default>*</default></input>
   </fieldset>
+  <row><panel><html><div class="ccp-filter-guide"><span><strong>Framework:</strong> choose the framework that owns the check. Changing it clears the previous check. <span class="ccp-help" tabindex="0" data-tooltip="Choose the framework that owns the check. Changing it clears the previous check so results cannot be mixed across frameworks." aria-label="Choose the framework that owns the check. Changing it clears the previous check so results cannot be mixed across frameworks.">i</span></span><span><strong>Check:</strong> the definition, criteria, evidence, and assessment panels follow this choice. <span class="ccp-help" tabindex="0" data-tooltip="Select the requirement you are reviewing. The definition, criteria, evidence, and assessment panels all follow this choice." aria-label="Select the requirement you are reviewing. The definition, criteria, evidence, and assessment panels all follow this choice.">i</span></span><span><strong>System key:</strong> leave * to review evidence and assessments across all systems. <span class="ccp-help" tabindex="0" data-tooltip="Optional system key filter. Leave * to review evidence and assessments across all systems." aria-label="Optional system key filter. Leave * to review evidence and assessments across all systems.">i</span></span></div></html></panel></row>
   <row>
     <panel>
       <html><div class="ccp-next-step"><strong>Review sequence:</strong> read the check definition, follow the implementation steps, run the stated validation method, review current evidence, then record an assessment decision.</div></html>

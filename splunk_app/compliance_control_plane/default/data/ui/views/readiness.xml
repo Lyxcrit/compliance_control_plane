@@ -3,7 +3,7 @@
   <description>Shared auditor and control-owner view for every selected framework.</description>
   <fieldset submitButton="false">
     <input type="dropdown" token="framework_token" searchWhenChanged="true">
-      <label>Framework <span class="ccp-help ccp-filter-help" title="Limits readiness results to one framework, or leave All selected to compare every framework enabled in Framework Setup.">i</span></label>
+      <label>Framework</label>
       <choice value="*">All selected frameworks</choice>
       <fieldForLabel>framework_name</fieldForLabel>
       <fieldForValue>framework_key</fieldForValue>
@@ -11,7 +11,7 @@
       <default>*</default>
     </input>
     <input type="dropdown" token="system_token" searchWhenChanged="true">
-      <label>System <span class="ccp-help ccp-filter-help" title="Use a system filter when you need an owner-level view. All active systems is appropriate for an overall posture review.">i</span></label>
+      <label>System</label>
       <choice value="*">All active systems</choice>
       <fieldForLabel>system_name</fieldForLabel>
       <fieldForValue>system_key</fieldForValue>
@@ -19,7 +19,7 @@
       <default>*</default>
     </input>
     <input type="dropdown" token="scope_token" searchWhenChanged="true">
-      <label>Audit scope <span class="ccp-help ccp-filter-help" title="The approved boundary used to join evidence and assessment records. Set this in Framework Setup before recording results.">i</span></label>
+      <label>Audit scope</label>
       <choice value="*">All scopes</choice>
       <fieldForLabel>scope_name</fieldForLabel>
       <fieldForValue>scope_key</fieldForValue>
@@ -27,6 +27,7 @@
       <default>*</default>
     </input>
   </fieldset>
+  <row><panel><html><div class="ccp-filter-guide"><span><strong>Framework:</strong> limits results to one framework, or use All selected frameworks for comparison. <span class="ccp-help" tabindex="0" data-tooltip="Limits readiness results to one framework, or leave All selected to compare every framework enabled in Framework Setup." aria-label="Limits readiness results to one framework, or leave All selected to compare every framework enabled in Framework Setup.">i</span></span><span><strong>System:</strong> use a specific system for owner action; use All active systems for the overall posture. <span class="ccp-help" tabindex="0" data-tooltip="Use a system filter when you need an owner-level view. All active systems is appropriate for an overall posture review." aria-label="Use a system filter when you need an owner-level view. All active systems is appropriate for an overall posture review.">i</span></span><span><strong>Audit scope:</strong> selects the approved boundary used to join evidence and assessment records. <span class="ccp-help" tabindex="0" data-tooltip="The approved boundary used to join evidence and assessment records. Set this in Framework Setup before recording results." aria-label="The approved boundary used to join evidence and assessment records. Set this in Framework Setup before recording results.">i</span></span></div></html></panel></row>
   <row>
     <panel>
       <html><div class="ccp-page-header"><div class="ccp-eyebrow ccp-eyebrow-dark">CONTROL READINESS</div><h1>Selected framework posture</h1><p>Use this view to find what is ready for attestation, what needs evidence, and which checks require a document review or Splunk tracking result.</p></div></html>

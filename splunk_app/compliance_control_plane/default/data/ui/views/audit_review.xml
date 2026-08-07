@@ -3,7 +3,7 @@
   <description>Current pass, partial, fail, and not-assessed status by requirement.</description>
   <fieldset submitButton="false">
     <input type="dropdown" token="framework_token" searchWhenChanged="true">
-      <label>Framework <span class="ccp-help ccp-filter-help" title="Choose one framework for a focused audit review, or leave All active frameworks for a portfolio view.">i</span></label>
+      <label>Framework</label>
       <choice value="*">All active frameworks</choice>
       <fieldForLabel>framework_name</fieldForLabel>
       <fieldForValue>framework_key</fieldForValue>
@@ -11,7 +11,7 @@
       <default>*</default>
     </input>
     <input type="dropdown" token="system_token" searchWhenChanged="true">
-      <label>System <span class="ccp-help ccp-filter-help" title="Optional system filter. Use a specific system when reviewing owner action; use All active systems for an audit-wide view.">i</span></label>
+      <label>System</label>
       <choice value="*">All active systems</choice>
       <fieldForLabel>system_name</fieldForLabel>
       <fieldForValue>system_key</fieldForValue>
@@ -19,6 +19,7 @@
       <default>*</default>
     </input>
   </fieldset>
+  <row><panel><html><div class="ccp-filter-guide"><span><strong>Framework:</strong> choose one for a focused review, or use All active frameworks for a portfolio view. <span class="ccp-help" tabindex="0" data-tooltip="Choose one framework for a focused audit review, or leave All active frameworks for a portfolio view." aria-label="Choose one framework for a focused audit review, or leave All active frameworks for a portfolio view.">i</span></span><span><strong>System:</strong> use a specific system when reviewing owner action; use All active systems for an audit-wide view. <span class="ccp-help" tabindex="0" data-tooltip="Optional system filter. Use a specific system when reviewing owner action; use All active systems for an audit-wide view." aria-label="Optional system filter. Use a specific system when reviewing owner action; use All active systems for an audit-wide view.">i</span></span></div></html></panel></row>
   <search id="CCPAuditReviewBase">
     <query>| `ccp_selected_requirements` | search framework_key="$framework_token$" OR "$framework_token$"="*" | join type=left framework_key requirement_key [| `ccp_latest_assessments` | where "$system_token$"="*" OR system_key="$system_token$" | fields framework_key requirement_key system_key status score assessor assessed_at reviewer reviewed_at notes] | join type=left framework_key requirement_key [| `ccp_evidence_rollup` | where "$system_token$"="*" OR system_key="$system_token$" | fields framework_key requirement_key system_key evidence_count] | eval status=coalesce(status,"Not assessed"), evidence_count=coalesce(evidence_count,0) | lookup policy_playbook.csv framework_key requirement_key OUTPUT implementation_title owner_role</query>
   </search>

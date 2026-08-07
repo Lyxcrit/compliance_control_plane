@@ -11,10 +11,10 @@
           <div class="ccp-callout ccp-callout-info"><strong>Use this page when:</strong> a check is Partial or Fail, a measurement is below target, or an exception needs an accountable owner. Record the specific change required to pass, the due date, and how it will be retested. Failed assessments and measurements can create findings automatically.</div>
         <div class="ccp-form-grid">
           <label>Finding key<input id="ccp-finding-key" type="text" placeholder="finding-2026-0001" /></label>
-          <label>Audit scope <span class="ccp-help" title="The boundary where the gap exists.">i</span><select id="ccp-finding-scope"><option value="">Loading scopes...</option></select></label>
-          <label>Framework <span class="ccp-help" title="The framework containing the affected check.">i</span><select id="ccp-finding-framework"><option value="">Loading frameworks...</option></select></label>
+          <label>Audit scope <span class="ccp-help" data-tooltip="The boundary where the gap exists." aria-label="The boundary where the gap exists.">i</span><select id="ccp-finding-scope"><option value="">Loading scopes...</option></select></label>
+          <label>Framework <span class="ccp-help" data-tooltip="The framework containing the affected check." aria-label="The framework containing the affected check.">i</span><select id="ccp-finding-framework"><option value="">Loading frameworks...</option></select></label>
           <label>Framework version<input id="ccp-finding-version" type="text" readonly="readonly" placeholder="Select a framework" /></label>
-          <label>Check <span class="ccp-help" title="The requirement that is not yet passing.">i</span><select id="ccp-finding-requirement"><option value="">Select a framework first</option></select></label>
+          <label>Check <span class="ccp-help" data-tooltip="The requirement that is not yet passing." aria-label="The requirement that is not yet passing.">i</span><select id="ccp-finding-requirement"><option value="">Select a framework first</option></select></label>
           <label>Title<input id="ccp-finding-title" type="text" placeholder="Log source coverage gap" /></label>
           <label>Severity<select id="ccp-finding-severity"><option>High</option><option>Medium</option><option>Low</option><option>Informational</option></select></label>
           <label>Status<select id="ccp-finding-status"><option>Open</option><option>In progress</option><option>Risk accepted</option><option>Resolved</option><option>Closed</option></select></label>
@@ -26,7 +26,7 @@
           <label>Retest at<input id="ccp-finding-retest" type="text" placeholder="2026-09-20T00:00:00Z" /></label>
           <label>Exception reference<input id="ccp-finding-exception" type="text" placeholder="risk-acceptance-123" /></label>
           <label>Closed at<input id="ccp-finding-closed" type="text" placeholder="2026-09-25T00:00:00Z" /></label>
-          <label class="ccp-field-wide">Remediation <span class="ccp-help" title="Describe the concrete implementation change required to pass the check.">i</span><textarea id="ccp-finding-remediation" rows="3" placeholder="Describe the change required to pass the check."></textarea></label>
+          <label class="ccp-field-wide">Remediation <span class="ccp-help" data-tooltip="Describe the concrete implementation change required to pass the check." aria-label="Describe the concrete implementation change required to pass the check.">i</span><textarea id="ccp-finding-remediation" rows="3" placeholder="Describe the change required to pass the check."></textarea></label>
           <label class="ccp-field-wide">Notes<textarea id="ccp-finding-notes" rows="3" placeholder="Scope, limitation, compensating control, or retest notes."></textarea></label>
         </div>
         <div class="ccp-form-actions"><button id="ccp-save-finding" class="btn btn-primary" type="button">Save finding</button><span id="ccp-finding-message" role="status"></span></div>

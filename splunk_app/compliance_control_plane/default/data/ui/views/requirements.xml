@@ -3,7 +3,7 @@
   <description>Explore requirements, evidence expectations, and implementation guidance.</description>
   <fieldset submitButton="false">
     <input type="dropdown" token="framework_token" searchWhenChanged="true">
-      <label>Framework <span class="ccp-help ccp-filter-help" title="Choose a framework first. Categories and requirements are rebuilt from this selection.">i</span></label>
+      <label>Framework</label>
       <choice value="">Select a framework</choice>
       <fieldForLabel>framework_name</fieldForLabel>
       <fieldForValue>framework_key</fieldForValue>
@@ -15,7 +15,7 @@
       </change>
     </input>
     <input type="dropdown" token="category_token" searchWhenChanged="true">
-      <label>Category <span class="ccp-help ccp-filter-help" title="Categories belong to the selected framework. Select a framework before choosing a category.">i</span></label>
+      <label>Category</label>
       <choice value="__select_framework__">Select a framework first</choice>
       <choice value="*">All categories</choice>
       <fieldForLabel>category</fieldForLabel>
@@ -24,7 +24,7 @@
       <default>__select_framework__</default>
     </input>
     <input type="dropdown" token="verification_token" searchWhenChanged="true">
-      <label>How to prove it <span class="ccp-help ccp-filter-help" title="Document review means a policy or record is required; Splunk tracking means the app can measure supporting telemetry; hybrid requires both.">i</span></label>
+      <label>How to prove it</label>
       <choice value="*">All verification routes</choice>
       <choice value="document">Document review</choice>
       <choice value="technical">Splunk tracking</choice>
@@ -32,6 +32,7 @@
       <default>*</default>
     </input>
   </fieldset>
+  <row><panel><html><div class="ccp-filter-guide"><span><strong>Framework:</strong> choose this first; categories and requirements are rebuilt from the selection. <span class="ccp-help" tabindex="0" data-tooltip="Choose a framework first. Categories and requirements are rebuilt from this selection." aria-label="Choose a framework first. Categories and requirements are rebuilt from this selection.">i</span></span><span><strong>Category:</strong> categories belong to the selected framework. <span class="ccp-help" tabindex="0" data-tooltip="Categories belong to the selected framework. Select a framework before choosing a category." aria-label="Categories belong to the selected framework. Select a framework before choosing a category.">i</span></span><span><strong>How to prove it:</strong> document means a policy or record, Splunk means measurable telemetry, and hybrid requires both. <span class="ccp-help" tabindex="0" data-tooltip="Document review means a policy or record is required; Splunk tracking means the app can measure supporting telemetry; hybrid requires both." aria-label="Document review means a policy or record is required; Splunk tracking means the app can measure supporting telemetry; hybrid requires both.">i</span></span></div></html></panel></row>
   <row>
     <panel>
       <html><div class="ccp-next-step"><strong>How to use this page:</strong> choose a framework, narrow the category if needed, then open a check. Each check explains what to implement, how to validate it, and what evidence an auditor should expect.</div></html>

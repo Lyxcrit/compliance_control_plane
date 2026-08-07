@@ -5,7 +5,7 @@
 This release improves auditor usability without changing the assessment or scoring model:
 
 - Added consistent hover explanations for framework, system, scope, category, evidence, and assessment controls.
-- Added readable custom help tooltips to replace dependence on native browser title hints.
+- Added readable custom help tooltips without duplicate native browser title hints.
 - Added next-step guidance to Requirement Explorer, Check Detail, and Technical Coverage.
 - Clarified scope, evidence freshness, assessment decision, measurement result, and exception fields.
 - Added automated coverage checks to keep auditor help present in the primary workflows.
